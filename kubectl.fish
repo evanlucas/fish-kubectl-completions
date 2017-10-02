@@ -145,16 +145,11 @@ function __fish_print_resource -d 'Print a list of pods' -a resource
   set -l namespace (__fish_kubectl_get_namespace)
   set -l res ""
   if test -z "$namespace"
-    set res (kubectl get "$resource" --no-headers $__k8s_timeout | awk '{print $1}')
+    kubectl get "$resource" --no-headers $__k8s_timeout | awk '{print $1}'
   else
-    set res (kubectl --namespace "$namespace" get "$resource" --no-headers $__k8s_timeout \
+    kubectl --namespace "$namespace" get "$resource" --no-headers $__k8s_timeout \
       | command grep -v "NAME" \
-      | awk '{print $1}')
-  end
-  if [ "$res" = "No resources found" ]
-    echo ""
-  else
-    echo "$res"
+      | awk '{print $1}'
   end
 end
 
