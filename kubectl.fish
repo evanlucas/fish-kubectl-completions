@@ -44,6 +44,7 @@ set __kubectl_resources      \
   configmaps                 \
   controllerrevisions        \
   cronjobs                   \
+  customresourcedefinitions  \
   daemonsets                 \
   deployments                \
   endpoints                  \
