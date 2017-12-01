@@ -34,48 +34,48 @@ set __kubectl_commands \
   convert              \
   completion
 
-set __kubectl_resources      \
-  all                        \
-  certificatesigningrequests \
-  clusterrolebindings        \
-  clusterroles               \
-  clusters                   \
-  componentstatuses          \
-  configmaps                 \
-  controllerrevisions        \
-  cronjobs                   \
-  customresourcedefinitions  \
-  daemonsets                 \
-  deployments                \
-  endpoints                  \
-  events                     \
-  horizontalpodautoscalers   \
-  ingresses                  \
-  jobs                       \
-  limitranges                \
-  namespaces                 \
-  networkpolicies            \
-  nodes                      \
-  persistentvolumeclaims     \
-  persistentvolumes          \
-  poddisruptionbudgets       \
-  podpreset                  \
-  pods                       \
-  podsecuritypolicies        \
-  podtemplates               \
-  replicasets                \
-  replicationcontrollers     \
-  resourcequotas             \
-  rolebindings               \
-  roles                      \
-  secrets                    \
-  serviceaccounts            \
-  services                   \
-  statefulsets               \
-  storageclasses             \
-  thirdpartyresources
+set __kubectl_resources          \
+  all                            \
+  certificatesigningrequests csr \
+  clusterrolebindings            \
+  clusterroles                   \
+  clusters                       \
+  componentstatuses cs           \
+  configmaps configmap cm        \
+  controllerrevisions            \
+  cronjobs                       \
+  customresourcedefinition crd   \
+  daemonsets ds                  \
+  deployments deployment deploy  \
+  endpoints ep                   \
+  events ev                      \
+  horizontalpodautoscalers hpa   \
+  ingresses ingress ing          \
+  jobs                           \
+  limitranges limits             \
+  namespaces namespace ns        \
+  networkpolicies netpol         \
+  nodes node no                  \
+  persistentvolumeclaims pvc     \
+  persistentvolumes pv           \
+  poddisruptionbudgets pdb       \
+  podpreset                      \
+  pods pod po                    \
+  podsecuritypolicies psp        \
+  podtemplates                   \
+  replicasets rs                 \
+  replicationcontrollers rc      \
+  resourcequotas quota           \
+  rolebindings                   \
+  roles                          \
+  secrets secret                 \
+  serviceaccounts sa             \
+  services service svc           \
+  statefulsets                   \
+  storageclasses
 
 set __k8s_timeout "--request-timeout=5s"
+set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
 
 function __fish_kubectl_needs_command -d 'Test if kubectl has yet to be given the subcommand'
   for i in (commandline -opc)
@@ -122,8 +122,7 @@ function __fish_kubectl_using_resource
 end
 
 function __fish_kubectl_get_namespace -d 'Gets the namespace for the current command'
-  set cmd (commandline -opc)
-
+  set -l cmd (commandline -opc)
   if [ (count $cmd) -eq 0 ]
     echo ""
     return 0
@@ -142,16 +141,32 @@ function __fish_kubectl_get_namespace -d 'Gets the namespace for the current com
   end
 end
 
-function __fish_print_resource -d 'Print a list of pods' -a resource
-  set -l namespace (__fish_kubectl_get_namespace)
-  set -l res ""
-  if test -z "$namespace"
-    kubectl get "$resource" --no-headers $__k8s_timeout | awk '{print $1}'
-  else
-    kubectl --namespace "$namespace" get "$resource" --no-headers $__k8s_timeout \
-      | command grep -v "NAME" \
-      | awk '{print $1}'
+function __fish_kubectl_all_namespaces -d 'Was --all-namespaces passed'
+  for i in (commandline -opc)
+    if contains -- $i $__kubectl_all_namespaces_flags
+      echo 1
+      return 1
+    end
   end
+  echo 0
+  return 0
+end
+
+function __fish_print_resource -d 'Print a list of resources' -a resource
+  set -l all_ns (__fish_kubectl_all_namespaces)
+  test $all_ns -eq 1
+  and kubectl get "$resource" -o name --all-namespaces $__k8s_timeout \
+    | string replace -r '(.*)/' ''
+  and return
+
+  set -l namespace (__fish_kubectl_get_namespace)
+  test -z "$namespace"
+  and kubectl get "$resource" -o name $__k8s_timeout \
+    | string replace -r '(.*)/' ''
+  and return
+
+  kubectl --namespace "$namespace" get "$resource" -o name $__k8s_timeout \
+    | string replace -r '(.*)/' ''
 end
 
 function __fish_print_resource_types
@@ -172,24 +187,78 @@ function __fish_kubectl_get_subcommand
   return 1
 end
 
+function __fish_kubectl_get_containers_for_pod -a pod
+  kubectl get pods "$pod" -o 'jsonpath={.spec.containers[*].name}'
+end
+
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a get -d "Display one or many resources"
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and not __fish_seen_subcommand_from $__kubectl_resources" -a '(__fish_print_resource_types)' -d 'Resource'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from pods" -a '(__fish_print_resource pods)' -d 'Pod'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from configmaps" -a '(__fish_print_resource configmaps)' -d 'Config Map'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from namespaces" -a '(__fish_print_resource namespaces)' -d 'Namespace'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from all" -a '(__fish_print_resource all)' -d 'All'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from certificatesigningrequests" -a '(__fish_print_resource certificatesigningrequests)' -d 'Certificate Signing Requests'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from csr" -a '(__fish_print_resource csr)' -d 'Certificate Signing Requests'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from clusterrolebindings" -a '(__fish_print_resource clusterrolebindings)' -d 'Cluster Role Bindings'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from clusterroles" -a '(__fish_print_resource clusterroles)' -d 'Cluster Roles'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from clusters" -a '(__fish_print_resource clusters)' -d 'Clusters'
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from componentstatuses" -a '(__fish_print_resource componentstatuses)' -d 'Component Statuses'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from cs" -a '(__fish_print_resource componentstatuses)' -d 'Component Statuses'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from configmaps" -a '(__fish_print_resource configmaps)' -d 'Config Map'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from configmap" -a '(__fish_print_resource configmaps)' -d 'Config Map'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from cm" -a '(__fish_print_resource configmaps)' -d 'Config Map'
+#controllerrevisions
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'Cron Jobs'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from customresourcedefinition" -a '(__fish_print_resource customresourcedefinition)' -d 'Custom Resource Definition'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from crd" -a '(__fish_print_resource customresourcedefinition)' -d 'Custom Resource Definition'
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from daemonsets" -a '(__fish_print_resource daemonsets)' -d 'Daemon set'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ds" -a '(__fish_print_resource daemonsets)' -d 'Daemon set'
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from deployments" -a '(__fish_print_resource deployments)' -d 'Deployment'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from events" -a '(__fish_print_resource events)' -d 'Event'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from deployment" -a '(__fish_print_resource deployments)' -d 'Deployment'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from deploy" -a '(__fish_print_resource deployments)' -d 'Deployment'
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from endpoints" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ep" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from events" -a '(__fish_print_resource events)' -d 'Event'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ev" -a '(__fish_print_resource events)' -d 'Event'
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from horizontalpodautoscalers" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ingress" -a '(__fish_print_resource ingress)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from hpa" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ingresses" -a '(__fish_print_resource ingresses)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ingress" -a '(__fish_print_resource ingresses)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ing" -a '(__fish_print_resource ingresses)' -d 'Ingress'
 complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from jobs" -a '(__fish_print_resource jobs)' -d 'Job'
-complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'CronJob'
+# limitranges
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from namespaces" -a '(__fish_print_resource namespaces)' -d 'Namespace'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from namespace" -a '(__fish_print_resource namespaces)' -d 'Namespace'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from ns" -a '(__fish_print_resource namespaces)' -d 'Namespace'
+# networkpolicies
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from nodes" -a '(__fish_print_resource nodes)' -d 'Node'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from node" -a '(__fish_print_resource nodes)' -d 'Node'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from no" -a '(__fish_print_resource nodes)' -d 'Node'
+# persistentvolumeclaims
+# persistentvolumes
+# poddisruptionbudgets
+# podpreset
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from pods" -a '(__fish_print_resource pods)' -d 'Pod'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from pod" -a '(__fish_print_resource pods)' -d 'Pod'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from po" -a '(__fish_print_resource pods)' -d 'Pod'
+# podsecuritypolicies
+# podtemplates
+# replicasets
+# replicationcontrollers
+# resourcequotas
+# rolebindings
+# roles
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from secrets" -a '(__fish_print_resource secrets)' -d 'Secret'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from secret" -a '(__fish_print_resource secrets)' -d 'Secret'
+# serviceaccounts
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from services" -a '(__fish_print_resource services)' -d 'Service'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from service" -a '(__fish_print_resource services)' -d 'Service'
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from svc" -a '(__fish_print_resource services)' -d 'Service'
+# statefulsets
+# storageclasses
+complete -c kubectl -f -n "__fish_kubectl_using_command get; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
 
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a describe -d "Show details of a specific resource or group of resources"
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and not __fish_seen_subcommand_from $__kubectl_resources" -a '(__fish_print_resource_types)' -d 'Resource'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from certificatesigningrequests" -a '(__fish_print_resource certificatesigningrequests)' -d 'Certificate Signing Request'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from csr" -a '(__fish_print_resource certificatesigningrequests)' -d 'Certificate Signing Request'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from pods" -a '(__fish_print_resource pods)' -d 'Pod'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from pod" -a '(__fish_print_resource pods)' -d 'Pod'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from po" -a '(__fish_print_resource pods)' -d 'Pod'
@@ -198,6 +267,7 @@ complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_see
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from configmaps" -a '(__fish_print_resource configmaps)' -d 'Config Map'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from cm" -a '(__fish_print_resource configmaps)' -d 'Config Map'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from namespaces" -a '(__fish_print_resource namespaces)' -d 'Namespace'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from namespace" -a '(__fish_print_resource namespaces)' -d 'Namespace'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ns" -a '(__fish_print_resource namespaces)' -d 'Namespace'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from replicasets" -a '(__fish_print_resource replicasets)' -d 'ReplicaSet'
@@ -205,16 +275,22 @@ complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_see
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from componentstatuses" -a '(__fish_print_resource componentstatuses)' -d 'Component Statuses'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from daemonsets" -a '(__fish_print_resource daemonsets)' -d 'Daemon set'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from deployments" -a '(__fish_print_resource deployments)' -d 'Deployment'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from deployment" -a '(__fish_print_resource deployments)' -d 'Deployment'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from deploy" -a '(__fish_print_resource deployments)' -d 'Deployment'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from events" -a '(__fish_print_resource events)' -d 'Event'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ev" -a '(__fish_print_resource events)' -d 'Event'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from endpoints" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ep" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from horizontalpodautoscalers" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
-complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ingress" -a '(__fish_print_resource ingress)' -d 'Ingress'
-complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ingresses" -a '(__fish_print_resource ingress)' -d 'Ingress'
-complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ing" -a '(__fish_print_resource ingress)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from hpa" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ingresses" -a '(__fish_print_resource ingresses)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ingress" -a '(__fish_print_resource ingresses)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from ing" -a '(__fish_print_resource ingresses)' -d 'Ingress'
 complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from jobs" -a '(__fish_print_resource jobs)' -d 'Job'
-complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'Cron Job'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'CronJob'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from nodes" -a '(__fish_print_resource nodes)' -d 'Node'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from node" -a '(__fish_print_resource nodes)' -d 'Node'
+complete -c kubectl -f -n "__fish_kubectl_using_command describe; and __fish_seen_subcommand_from no" -a '(__fish_print_resource nodes)' -d 'Node'
 
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a delete -d 'Delete resources by filenames, stdin, resources and names, or by resources and label selector.'
 complete -c kubectl -f -n '__fish_kubectl_using_command delete; and not __fish_seen_subcommand_from $__kubectl_resources' -a '(__fish_print_resource_types)' -d 'Resource'
@@ -224,25 +300,31 @@ complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from services" -a '(__fish_print_resource services)' -d 'Service'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from svc" -a '(__fish_print_resource services)' -d 'Service'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from configmaps" -a '(__fish_print_resource configmaps)' -d 'Config Map'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from configmap" -a '(__fish_print_resource configmaps)' -d 'Config Map'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from cm" -a '(__fish_print_resource configmaps)' -d 'Config Map'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from namespaces" -a '(__fish_print_resource namespaces)' -d 'Namespace'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from namespace" -a '(__fish_print_resource namespaces)' -d 'Namespace'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ns" -a '(__fish_print_resource namespaces)' -d 'Namespace'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from replicasets" -a '(__fish_print_resource replicasets)' -d 'ReplicaSet'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from rs" -a '(__fish_print_resource replicasets)' -d 'ReplicaSet'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from componentstatuses" -a '(__fish_print_resource componentstatuses)' -d 'Component Statuses'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from daemonsets" -a '(__fish_print_resource daemonsets)' -d 'Daemon set'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ds" -a '(__fish_print_resource daemonsets)' -d 'Daemon set'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from deployments" -a '(__fish_print_resource deployments)' -d 'Deployment'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from deployment" -a '(__fish_print_resource deployments)' -d 'Deployment'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from deploy" -a '(__fish_print_resource deployments)' -d 'Deployment'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from events" -a '(__fish_print_resource events)' -d 'Event'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ev" -a '(__fish_print_resource events)' -d 'Event'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from endpoints" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ep" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from horizontalpodautoscalers" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
-complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ingress" -a '(__fish_print_resource ingress)' -d 'Ingress'
-complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ingresses" -a '(__fish_print_resource ingress)' -d 'Ingress'
-complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ing" -a '(__fish_print_resource ingress)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from hpa" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ingresses" -a '(__fish_print_resource ingresses)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ingress" -a '(__fish_print_resource ingresses)' -d 'Ingress'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from ing" -a '(__fish_print_resource ingresses)' -d 'Ingress'
 complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from jobs" -a '(__fish_print_resource jobs)' -d 'Job'
-complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'Cron Job'
+complete -c kubectl -f -n "__fish_kubectl_using_command delete; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'CronJob'
 
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a set -d "Set specific features on objects"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a create -d "Create a resource by filename or stdin"
@@ -277,7 +359,9 @@ complete -c kubectl -f -n '__fish_kubectl_needs_command' -a completion -d "Outpu
 
 # logs
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a logs -d 'Print the logs for a container in a pod.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from logs' -s -f -d 'Follow log output'
+complete -c kubectl -A -f -n '__fish_seen_subcommand_from logs' -s f -l follow -d 'Follow log output'
+complete -c kubectl -A -f -n '__fish_seen_subcommand_from logs' -s l -l selector -d 'Selector (label query) to filter on'
+complete -c kubectl -A -f -n '__fish_seen_subcommand_from logs' -s p -l previous -d 'Previous instance'
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from logs' -a '(__fish_print_resource pods)' -d "Pod"
 
 # exec
