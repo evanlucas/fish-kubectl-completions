@@ -74,6 +74,21 @@ set __kubectl_resources          \
   statefulsets                   \
   storageclasses
 
+set __kubectl_config_subcommands \
+  current-context \
+  delete-cluster  \
+  delete-context  \
+  get-clusters    \
+  get-contexts    \
+  rename-context  \
+  set             \
+  set-cluster     \
+  set-context     \
+  set-credentials \
+  unset           \
+  use-context     \
+  view
+
 set __k8s_timeout "--request-timeout=5s"
 set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
 
@@ -338,3 +353,7 @@ complete -c kubectl -f -n '__fish_kubectl_needs_command' -a version -d 'Print th
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -l client -d 'Client version only (no server required)'
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -s o -l output -a 'yaml json' -d 'Specify output format'
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -l short -a 'true false' -d 'Print just the version number'
+
+# config
+complete -c kubectl -f -n "__fish_kubectl_using_command config; and not __fish_seen_subcommand_from $__kubectl_config_subcommands" -a '$__kubectl_config_subcommands' -d 'kubectl config subcommand'
+complete -c kubectl -f -n '__fish_kubectl_using_command config; and __fish_seen_subcommand_from use-context delete-context' -a '(kubectl config get-contexts -o name)'
