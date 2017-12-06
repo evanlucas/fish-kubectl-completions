@@ -355,5 +355,5 @@ complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -s o -l outpu
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -l short -a 'true false' -d 'Print just the version number'
 
 # config
-complete -c kubectl -f -n "__fish_kubectl_using_command config; and not __fish_seen_subcommand_from $__kubectl_config_subcommands" -a '$__kubectl_config_subcommands' -d 'kube config subcommand'
-complete -c kubectl -f -n '__fish_kubectl_using_command config; and __fish_seen_subcommand_from use-context delete-context' -a '(kubectl config get-contexts --no-headers | awk \'{print $2}\')'
+complete -c kubectl -f -n "__fish_kubectl_using_command config; and not __fish_seen_subcommand_from $__kubectl_config_subcommands" -a '$__kubectl_config_subcommands' -d 'kubectl config subcommand'
+complete -c kubectl -f -n '__fish_kubectl_using_command config; and __fish_seen_subcommand_from use-context delete-context' -a '(kubectl config get-contexts -o name)'
