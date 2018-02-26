@@ -89,6 +89,8 @@ set __kubectl_config_subcommands \
   use-context     \
   view
 
+set __fish_kubectl_subresource_commands get describe delete edit label
+
 set __k8s_timeout "--request-timeout=5s"
 set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
 
@@ -103,8 +105,9 @@ function __fish_kubectl_needs_command -d 'Test if kubectl has yet to be given th
 end
 
 function __fish_kubectl_needs_resource -d 'Test if kubectl has yet to be given the subcommand resource'
+  set -l resources (__fish_print_resource_types)
   for i in (commandline -opc)
-    if contains -- $i $__kubectl_resources
+    if contains -- $i $resources
       return 1
     end
   end
@@ -167,6 +170,32 @@ function __fish_kubectl_all_namespaces -d 'Was --all-namespaces passed'
   return 0
 end
 
+function __fish_kubectl_print_current_resources -d 'Prints current resources'
+  set -l found 0
+  # There is probably a better way to do this...
+  # found === 1 means that we have not yet found the crd type
+  # found === 2 means that we have not yet found the crd name, but have found the type
+  set -l current_resource
+  set -l crd_types (__fish_kubectl_get_crds)
+  for i in (commandline -opc)
+    if test $found -eq 0
+      if contains -- $i $__fish_kubectl_subresource_commands
+        set found 1
+      end
+    end
+
+    if test $found -eq 1
+      if contains -- $i $crd_types
+        set -l out (__fish_print_resource $i)
+        for item in $out
+          echo "$item"
+        end
+        return 0
+      end
+    end
+  end
+end
+
 function __fish_print_resource -d 'Print a list of resources' -a resource
   set -l all_ns (__fish_kubectl_all_namespaces)
   test $all_ns -eq 1
@@ -188,6 +217,12 @@ function __fish_print_resource_types
   for r in $__kubectl_resources
     echo $r
   end
+
+  set -l crds (__fish_kubectl_get_crds)
+
+  for r in $crds
+    echo $r
+  end
 end
 
 function __fish_kubectl_get_subcommand
@@ -206,14 +241,22 @@ function __fish_kubectl_get_containers_for_pod -a pod
   kubectl get pods "$pod" -o 'jsonpath={.spec.containers[*].name}'
 end
 
+function __fish_kubectl_get_crds
+  kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
+end
+
+function __fish_kubectl_get_crd_resources -a crd
+  kubectl get "$crd" -o jsonpath='{.items[*].metadata.name}'
+end
+
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a get -d "Display one or many resources"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a describe -d "Show details of a specific resource or group of resources"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a delete -d 'Delete resources by filenames, stdin, resources and names, or by resources and label selector.'
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a edit -d "Edit a resource on the server"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a label -d "Update the labels on a resource"
 
-for subcmd in get describe delete edit label
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and not __fish_seen_subcommand_from $__kubectl_resources" -a '(__fish_print_resource_types)' -d 'Resource'
+for subcmd in $__fish_kubectl_subresource_commands
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and not __fish_seen_subcommand_from (__fish_print_resource_types)" -a '(__fish_print_resource_types)' -d 'Resource'
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from all" -a '(__fish_print_resource all)' -d 'All'
   for r in certificatesigningrequests csr
     complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource certificatesigningrequests)' -d 'Certificate Signing Requests'
@@ -303,6 +346,7 @@ for subcmd in get describe delete edit label
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from statefulsets" -a '(__fish_print_resource statefulsets)' -d 'Stateful Set'
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from storageclasses" -a '(__fish_print_resource storageclasses)' -d 'Storage Class'
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
 end
 
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a set -d "Set specific features on objects"
