@@ -89,10 +89,15 @@ set __kubectl_config_subcommands \
   use-context     \
   view
 
-set __fish_kubectl_subresource_commands get describe delete edit label
+set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
+set __k8s_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
+set __fish_kubectl_subresource_commands get describe delete edit label explain
 
-set __k8s_timeout "--request-timeout=5s"
 set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
+
+function __fish_kubectl
+  command kubectl $__k8s_timeout $argv
+end
 
 function __fish_kubectl_needs_command -d 'Test if kubectl has yet to be given the subcommand'
   for i in (commandline -opc)
@@ -199,17 +204,17 @@ end
 function __fish_print_resource -d 'Print a list of resources' -a resource
   set -l all_ns (__fish_kubectl_all_namespaces)
   test $all_ns -eq 1
-  and kubectl get "$resource" -o name --all-namespaces $__k8s_timeout \
+  and __fish_kubectl get "$resource" -o name --all-namespaces \
     | string replace -r '(.*)/' ''
   and return
 
   set -l namespace (__fish_kubectl_get_namespace)
   test -z "$namespace"
-  and kubectl get "$resource" -o name $__k8s_timeout \
+  and __fish_kubectl get "$resource" -o name \
     | string replace -r '(.*)/' ''
   and return
 
-  kubectl --namespace "$namespace" get "$resource" -o name $__k8s_timeout \
+  __fish_kubectl --namespace "$namespace" get "$resource" -o name \
     | string replace -r '(.*)/' ''
 end
 
@@ -238,15 +243,15 @@ function __fish_kubectl_get_subcommand
 end
 
 function __fish_kubectl_get_containers_for_pod -a pod
-  kubectl get pods "$pod" -o 'jsonpath={.spec.containers[*].name}'
+  __fish_kubectl get pods "$pod" -o 'jsonpath={.spec.containers[*].name}'
 end
 
 function __fish_kubectl_get_crds
-  kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
+  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
 end
 
 function __fish_kubectl_get_crd_resources -a crd
-  kubectl get "$crd" -o jsonpath='{.items[*].metadata.name}'
+  __fish_kubectl get "$crd" -o jsonpath='{.items[*].metadata.name}'
 end
 
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a get -d "Display one or many resources"
