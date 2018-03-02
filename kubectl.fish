@@ -72,7 +72,7 @@ set __kubectl_resources          \
   serviceaccounts sa             \
   services service svc           \
   statefulsets sts               \
-  storageclasses
+  storageclass storageclasses sc
 
 set __kubectl_config_subcommands \
   current-context \
@@ -346,7 +346,9 @@ for subcmd in $__fish_kubectl_subresource_commands
   for r in statefulsets sts
     complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource statefulsets)' -d 'Stateful Set'
   end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from storageclasses" -a '(__fish_print_resource storageclasses)' -d 'Storage Class'
+  for r in storageclass storageclasses sc
+    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource storageclasses)' -d 'Storage Class'
+  end
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
 end
