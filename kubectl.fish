@@ -89,6 +89,19 @@ set __kubectl_config_subcommands \
   use-context     \
   view
 
+function __kubectl_subcommands -a cmd
+  switch $cmd
+    case 'rollout'
+      echo history\t'View rollout history'
+      echo pause\t'Mark the provided resource as paused'
+      echo resume\t'Resume a paused resource'
+      echo status\t'Show the status of the rollout'
+      echo undo\t'Undo a previous rollout'
+  end
+end
+
+set __kubectl_rollout_subcommands (__kubectl_subcommands rollout | string replace -r '\t.*$' '')
+
 set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
 set __k8s_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
 set __fish_kubectl_subresource_commands get describe delete edit label explain
@@ -254,6 +267,29 @@ function __fish_kubectl_get_crd_resources -a crd
   __fish_kubectl get "$crd" -o jsonpath='{.items[*].metadata.name}'
 end
 
+# deployments, daemonsets, and statefulsets
+function __fish_kubectl_get_rollout_resources
+  set -l jsonpath '{range .items[*]}{.spec.template.spec.containers[*].name}{"\n"}{end}'
+  set -l deploys (__fish_kubectl get deploy -o jsonpath=$jsonpath)
+  set -l daemonsets (__fish_kubectl get daemonsets -o jsonpath=$jsonpath)
+  set -l statefulsets (__fish_kubectl get statefulsets -o jsonpath=$jsonpath)
+  for i in $deploys
+    echo "deploy/$i"
+    echo "deployment/$i"
+    echo "deployments/$i"
+  end
+  for i in $daemonsets
+    echo "daemonset/$i"
+    echo "daemonsets/$i"
+    echo "ds/$i"
+  end
+  for i in $statefulsets
+    echo "statefulset/$i"
+    echo "statefulsets/$i"
+    echo "sts/$i"
+  end
+end
+
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a get -d "Display one or many resources"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a describe -d "Show details of a specific resource or group of resources"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a delete -d 'Delete resources by filenames, stdin, resources and names, or by resources and label selector.'
@@ -375,7 +411,6 @@ complete -c kubectl -f -n '__fish_kubectl_needs_command' -a proxy -d "Run a prox
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a run -d "Run a particular image on the cluster."
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a expose -d "Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a autoscale -d "Auto-scale a Deployment, ReplicaSet, or ReplicationController"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rollout -d "rollout manages a deployment"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a annotate -d "Update the annotations on a resource"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a taint -d "Update the taints on one or more nodes"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a config -d "config modifies kubeconfig files"
@@ -402,6 +437,11 @@ complete -c kubectl -A -f -n '__fish_seen_subcommand_from exec' -a '(__fish_prin
 # port-forward
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a port-forward -d "Forward one or more local ports to a pod."
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from port-forward' -a '(__fish_print_resource pods)' -d "Pod"
+
+# rollout
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rollout -d "Manage rollout of a resource"
+complete -c kubectl -A -f -n '__fish_seen_subcommand_from rollout; and not __fish_seen_subcommand_from $__kubectl_rollout_subcommands' -a '(__kubectl_subcommands rollout)'
+complete -c kubectl -f -n '__fish_kubectl_using_command rollout; and __fish_seen_subcommand_from $__kubectl_rollout_subcommands' -a '(__fish_kubectl_get_rollout_resources)'
 
 # version
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a version -d 'Print the client and server version information for the current context'
