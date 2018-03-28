@@ -252,6 +252,25 @@ function __fish_kubectl_get_ns_flags
   return 1
 end
 
+function __fish_kubectl_get_context -d 'Gets the context for the current command'
+  set -l cmd (commandline -opc)
+  if [ (count $cmd) -eq 0 ]
+    echo ""
+    return 0
+  else
+    set -l foundContext 0
+    for c in $cmd
+      test $foundContext -eq 1
+      and echo "$c"
+      and return 0
+      if contains -- $c "--context"
+        set foundContext 1
+      end
+    end
+    return 1
+  end
+end
+
 function __fish_kubectl_print_resource_types
   for r in $__fish_kubectl_resources
     echo $r
