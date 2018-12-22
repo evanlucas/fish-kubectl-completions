@@ -217,6 +217,31 @@ function __fish_kubectl_print_current_resources -d 'Prints current resources'
   end
 end
 
+function __kubectl_print_matching_resources
+  set -l last (commandline -opt)
+  if not set -l matches (string match -r "(.*)/" $last)
+    return
+  end
+  set -l prefix $matches[2]
+  set -l resources (__fish_print_resource "$prefix")
+  for i in $resources
+    echo "$prefix/$i"
+  end
+end
+
+function __kubectl_has_partial_resource_match
+  set -l last (commandline -opt)
+  if not set -l matches (string match "(.*)/" $last)
+    return
+  end
+
+  if string match -q "(.*)/" $last
+    return 0
+  end
+
+  return 1
+end
+
 function __fish_print_resource -d 'Print a list of resources' -a resource
   set -l all_ns (__fish_kubectl_all_namespaces)
   test $all_ns -eq 1
@@ -301,6 +326,7 @@ complete -c kubectl -f -n '__fish_kubectl_needs_command' -a label -d "Update the
 
 for subcmd in $__fish_kubectl_subresource_commands
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and not __fish_seen_subcommand_from (__fish_print_resource_types)" -a '(__fish_print_resource_types)' -d 'Resource'
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __kubectl_has_partial_resource_match" -a '(__kubectl_print_matching_resources)' -d 'Resource'
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from all" -a '(__fish_print_resource all)' -d 'All'
   for r in certificatesigningrequests csr
     complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource certificatesigningrequests)' -d 'Certificate Signing Requests'
