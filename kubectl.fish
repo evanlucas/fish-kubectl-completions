@@ -318,6 +318,43 @@ function __fish_kubectl_get_rollout_resources
   end
 end
 
+function __kubectl_flag_requires_arg -a arg
+  set -l bools true false
+  for b in $bools
+    if test "$b" = "$arg"
+      return 1
+    end
+  end
+
+  return 0
+end
+
+function __kubectl_complete_subcommand_flags
+  set -l rawOptions (__fish_kubectl $argv -h | awk '/Options:/,/Usage:/' | egrep -v 'Options:|Usage:' | awk 'NF > 0' | awk -F ':' '{print $1 "|" $2}')
+  for opt in $rawOptions
+    if set -l matches (string match -r --entire "\s\s\-?([^,]+)?,? \-\-([^=]+)=([^\|]+)\|\s?(.*)" $opt)
+      set -l short (string trim $matches[2])
+      set -l long $matches[3]
+      set -l description $matches[5]
+      set -l args -c kubectl -A -f -n "__fish_seen_subcommand_from $argv"
+      if __kubectl_flag_requires_arg $matches[4]
+        set args $args -r
+      end
+
+      if test "$short" != ""
+        set args $args -s
+        set args $args "$short"
+      end
+
+      set args $args -l
+      set args $args $long
+      set args $args -d
+      set args $args "$description"
+      complete $args
+    end
+  end
+end
+
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a get -d "Display one or many resources"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a describe -d "Show details of a specific resource or group of resources"
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a delete -d 'Delete resources by filenames, stdin, resources and names, or by resources and label selector.'
@@ -326,6 +363,7 @@ complete -c kubectl -f -n '__fish_kubectl_needs_command' -a label -d "Update the
 
 for subcmd in $__fish_kubectl_subresource_commands
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and not __fish_seen_subcommand_from (__fish_print_resource_types)" -a '(__fish_print_resource_types)' -d 'Resource'
+  __kubectl_complete_subcommand_flags $subcmd
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __kubectl_has_partial_resource_match" -a '(__kubectl_print_matching_resources)' -d 'Resource'
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from all" -a '(__fish_print_resource all)' -d 'All'
   for r in certificatesigningrequests csr
@@ -423,84 +461,87 @@ for subcmd in $__fish_kubectl_subresource_commands
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
 end
 
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a set -d "Set specific features on objects"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a create -d "Create a resource by filename or stdin"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a replace -d "Replace a resource by filename or stdin."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a patch -d "Update field(s) of a resource using strategic merge patch."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a namespace -d "SUPERSEDED: Set and view the current Kubernetes namespace"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rolling-update -d "Perform a rolling update of the given ReplicationController."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a scale -d "Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cordon -d "Mark node as unschedulable"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a drain -d "Drain node in preparation for maintenance"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a uncordon -d "Mark node as schedulable"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a attach -d "Attach to a running container."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a exec -d "Execute a command in a container."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a proxy -d "Run a proxy to the Kubernetes API server"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a run -d "Run a particular image on the cluster."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a expose -d "Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a autoscale -d "Auto-scale a Deployment, ReplicaSet, or ReplicationController"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a annotate -d "Update the annotations on a resource"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a taint -d "Update the taints on one or more nodes"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cluster-info -d "Display cluster info"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a api-versions -d "Print the supported API versions on the server, in the form of \"group/version\"."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a version -d "Print the client and server version information."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a explain -d "Documentation of resources."
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a convert -d "Convert config files between different API versions"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a completion -d "Output shell completion code for the given shell (bash or zsh)"
-
 # logs
 for subcmd in log logs
   complete -c kubectl -f -n '__fish_kubectl_needs_command' -a $subcmd -d 'Print the logs for a container in a pod.'
+  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -s c -l container -d 'Print the logs of this container'
   complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -s f -l follow -d 'Follow log output'
+  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -l include-extended-apis -d 'If true, include definitions of new APIs via calls to the API server. [default true]'
+  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -l interactive -d 'If true, prompt the user for input when required.'
   complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -r -s l -l selector -d 'Selector (label query) to filter on'
   complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -s p -l previous -d 'Previous instance'
   complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -a '(__fish_print_resource pods)' -d "Pod"
+  __kubectl_complete_subcommand_flags $subcmd
 end
 
+# api-versions
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a api-versions -d "Print the supported API versions on the server, in the form of \"group/version\"."
 
 # apply
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a apply -d "Apply a configuration to a resource by filename or stdin"
-# apply arguments
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
-# The -r argument to the complete function requires that a parameter be passed.
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -s f -l filename -r -d 'Filename, directory, or URL to files that contains the configuration to apply'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l force -d 'Delete and re-create the specified resource, when PATCH encounters conflict and has retried for 5 times.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l grace-period -r -d 'Only relevant during a prune or a force apply. Period of time in seconds given to pruned or deleted resources to terminate gracefully. Ignored if negative.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l include-extended-apis -d 'If true, include definitions of new APIs via calls to the API server. [default true]'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l no-headers -d 'When using the default or custom-column output format, don\'t print headers (default print headers).'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l openapi-patch -d 'If true, use openapi to calculate diff when the openapi presents and the resource can be found in the openapi spec. Otherwise, fall back to use baked-in types.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -s o -l output -r -d 'Output format. One of: json|yaml|wide|name|custom-columns=...|custom-columns-file=...|go-template=...|go-template-file=...|jsonpath=...|jsonpath-file=...'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l overwrite -d 'Automatically resolve conflicts between the modified and live configuration by using values from the modified configuration'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l prune -d 'Automatically delete resource objects, including the uninitialized ones, that do not appear in the configs and are created by either apply or create --save-config. Should be used with either -l or --all.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l prune-whitelist -r -d 'Overwrite the default whitelist with <group/version/kind> for --prune'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -s l -l selector -r -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'. (e.g. -l key1=value1,key2=value2)'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -s a -l show-all -d 'When printing, show all resources (default show all pods including terminated one.)'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l show-labels -d 'When printing, show all labels as the last column (default hide labels column)'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l sort-by -r -d 'If non-empty, sort list types using this field specification.  The field specification is expressed as a JSONPath expression (e.g. \'{.metadata.name}\'). The field in the API resource specified by this JSONPath expression must be an integer or a string.'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l template -r -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l timeout -r -d 'Only relevant during a force apply. The length of time to wait before giving up on a delete of the old resource, zero means determine a timeout from the size of the object. Any other values should contain a corresponding time unit (e.g. 1s, 2m, 3h).'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from apply' -l validate -d 'If true, use a schema to validate the input before sending it'
+__kubectl_complete_subcommand_flags apply
 
-# subcommands with subscommands
-set __fish_kubectl_subcmdswithsubcmds \
-  apply                               \
-  config                              \
-  rollout
+# annotate
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a annotate -d "Update the annotations on a resource"
+__kubectl_complete_subcommand_flags annotate
 
-for subcmd in $__fish_kubectl_subcmdswithsubcmds
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd;" -a "(__kubectl_get_possible_commands_with_description $subcmd)"
+# attach
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a attach -d "Attach to a running container."
+__kubectl_complete_subcommand_flags attach
+
+# autoscale
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a autoscale -d "Auto-scale a Deployment, ReplicaSet, or ReplicationController"
+__kubectl_complete_subcommand_flags autoscale
+
+# cluster-info
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cluster-info -d "Display cluster info"
+__kubectl_complete_subcommand_flags cluster-info
+for subcmd in (__kubectl_get_possible_commands cluster-info)
+  __kubectl_complete_subcommand_flags cluster-info $subcmd
 end
+
+# completion
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a completion -d "Output shell completion code for the given shell (bash or zsh)"
 
 # config
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a config -d "config modifies kubeconfig files"
 complete -c kubectl -f -n '__fish_kubectl_using_command config; and __fish_seen_subcommand_from use-context delete-context' -a '(kubectl config get-contexts -o name)'
 
+# convert
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a convert -d "Convert config files between different API versions"
+__kubectl_complete_subcommand_flags convert
+
+# cordon
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cordon -d "Mark node as unschedulable"
+__kubectl_complete_subcommand_flags cordon
+
+# create
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a create -d "Create a resource by filename or stdin"
+complete -c kubectl -A -f -n '__fish_seen_subcommand_from create; and not __fish_seen_subcommand_from (__kubectl_get_possible_commands create)' -a '(__kubectl_get_possible_commands_with_description create)'
+for subcmd in (__kubectl_get_possible_commands create)
+  __kubectl_complete_subcommand_flags create $subcmd
+end
+
+# drain
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a drain -d "Drain node in preparation for maintenance"
+__kubectl_complete_subcommand_flags drain
+
 # exec
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a exec -d 'Execute a command in a container.'
+__kubectl_complete_subcommand_flags exec
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from exec' -a '(__fish_print_resource pods)' -d "Pod"
+
+# explain
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a explain -d "Documentation of resources."
+__kubectl_complete_subcommand_flags explain
+
+# expose
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a expose -d "Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service"
+__kubectl_complete_subcommand_flags expose
+
+# patch
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a patch -d "Update field(s) of a resource using strategic merge patch."
+__kubectl_complete_subcommand_flags patch
 
 # plugin
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a plugin -d "config modifies kubeconfig files"
@@ -510,13 +551,56 @@ complete -c kubectl -A -f -n '__fish_seen_subcommand_from plugin; and not __fish
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a port-forward -d "Forward one or more local ports to a pod."
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from port-forward' -a '(__fish_print_resource pods)' -d "Pod"
 
+# proxy
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a proxy -d "Run a proxy to the Kubernetes API server"
+__kubectl_complete_subcommand_flags proxy
+
+# replace
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a replace -d "Replace a resource by filename or stdin."
+__kubectl_complete_subcommand_flags replace
+
+# rolling-update
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rolling-update -d "Perform a rolling update of the given ReplicationController."
+__kubectl_complete_subcommand_flags rolling-update
+
 # rollout
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rollout -d "Manage rollout of a resource"
 complete -c kubectl -f -n '__fish_kubectl_using_command rollout; and __fish_seen_subcommand_from (__kubectl_get_possible_commands rollout)' -a '(__fish_kubectl_get_rollout_resources)'
 
+# run
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a run -d "Run a particular image on the cluster."
+__kubectl_complete_subcommand_flags run
+
+# scale
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a scale -d "Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job."
+__kubectl_complete_subcommand_flags scale
+
+# set
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a set -d "Set specific features on objects"
+for subcmd in (__kubectl_get_possible_commands set)
+  __kubectl_complete_subcommand_flags set $subcmd
+end
+
+# taint
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a taint -d "Update the taints on one or more nodes"
+__kubectl_complete_subcommand_flags taint
+
+# uncordon
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a uncordon -d "Mark node as schedulable"
+__kubectl_complete_subcommand_flags uncordon
+
 # version
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a version -d 'Print the client and server version information for the current context'
-# -c is deprecated, so do not include it.
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -l client -d 'Client version only (no server required)'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -s o -l output -a 'yaml json' -d 'Specify output format'
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from version' -l short -a 'true false' -d 'Print just the version number'
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a version -d "Print the client and server version information."
+__kubectl_complete_subcommand_flags version
+
+# subcommands with subscommands
+set __fish_kubectl_subcmdswithsubcmds \
+  apply                               \
+  cluster-info                        \
+  config                              \
+  rollout                             \
+  set
+
+for subcmd in $__fish_kubectl_subcmdswithsubcmds
+  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd; and not __fish_seen_subcommand_from (__kubectl_get_possible_commands $subcmd)" -a "(__kubectl_get_possible_commands_with_description $subcmd)"
+end
