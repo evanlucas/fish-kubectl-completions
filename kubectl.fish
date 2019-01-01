@@ -80,6 +80,23 @@ set __kubectl_resources          \
   statefulsets sts               \
   storageclass storageclasses sc
 
+set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
+set __k8s_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
+set __fish_kubectl_subresource_commands get describe delete edit label explain
+
+set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
+set __fish_kubectl_subresources_completed
+
+function __fish_kubectl
+  command kubectl $__k8s_timeout $argv
+end
+
+function __fish_kubectl_get_crds
+  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
+end
+
+set __fish_kubectl_crds (__fish_kubectl_get_crds)
+
 function __kubectl_seen_subcommand_from_regex
   set -l cmd (commandline -poc)
   set -e cmd[1]
@@ -105,16 +122,6 @@ function __kubectl_get_possible_commands -a cmd
   __kubectl_get_possible_commands_with_description $cmd | awk '{print $1}'
 end
 
-set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
-set __k8s_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
-set __fish_kubectl_subresource_commands get describe delete edit label explain
-
-set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
-
-function __fish_kubectl
-  command kubectl $__k8s_timeout $argv
-end
-
 function __fish_kubectl_needs_command -d 'Test if kubectl has yet to be given the subcommand'
   for i in (commandline -opc)
     if contains -- $i $__kubectl_commands
@@ -134,7 +141,6 @@ function __fish_kubectl_needs_resource -d 'Test if kubectl has yet to be given t
   end
   return 0
 end
-
 
 function __fish_kubectl_using_command
   set -l cmd (__fish_kubectl_needs_command)
@@ -197,7 +203,7 @@ function __fish_kubectl_print_current_resources -d 'Prints current resources'
   # found === 1 means that we have not yet found the crd type
   # found === 2 means that we have not yet found the crd name, but have found the type
   set -l current_resource
-  set -l crd_types (__fish_kubectl_get_crds)
+  set -l crd_types $__fish_kubectl_crds
   for i in (commandline -opc)
     if test $found -eq 0
       if contains -- $i $__fish_kubectl_subresource_commands
@@ -242,29 +248,53 @@ function __kubectl_has_partial_resource_match
   return 1
 end
 
+function __fish_kubectl_get_ns_flags
+  set -l cmd (commandline -opc)
+  if [ (count $cmd) -eq 0 ]
+    return 1
+  end
+
+  set -l foundNamespace 0
+
+  for c in $cmd
+    echo "get ns: $c $foundNamespace" > /tmp/kubectl_debug.log
+    test $foundNamespace -eq 1
+    set -l out "--namespace" "$c"
+    and echo $out
+    and return 0
+
+    if contains -- $c $__kubectl_all_namespaces_flags
+      echo "--all-namespaces"
+      return 0
+    end
+
+    if contains -- $c "--namespace" "-n"
+      set foundNamespace 1
+    end
+  end
+
+  return 1
+end
+
 function __fish_print_resource -d 'Print a list of resources' -a resource
-  set -l all_ns (__fish_kubectl_all_namespaces)
-  test $all_ns -eq 1
-  and __fish_kubectl get "$resource" -o name --all-namespaces \
-    | string replace -r '(.*)/' ''
-  and return
+  echo "__fish_print_resource: ns_flag: $ns_flags" > /tmp/kubectl_debug.log
+  set -l args
+  if set -l ns_flags (__fish_kubectl_get_ns_flags | string split " ")
+    for ns in $ns_flags
+      set -a args $ns
+    end
+  end
 
-  set -l namespace (__fish_kubectl_get_namespace)
-  test -z "$namespace"
-  and __fish_kubectl get "$resource" -o name \
-    | string replace -r '(.*)/' ''
-  and return
-
-  __fish_kubectl --namespace "$namespace" get "$resource" -o name \
-    | string replace -r '(.*)/' ''
+  set -a args get "$resource" -o name
+  __fish_kubectl $args | string replace -r '(.*)/' ''
 end
 
 function __fish_print_resource_types
-  for r in $__kubectl_resources
+  for r in $__fish_kubectl_resources
     echo $r
   end
 
-  set -l crds (__fish_kubectl_get_crds)
+  set -l crds $__fish_kubectl_crds
 
   for r in $crds
     echo $r
@@ -285,10 +315,6 @@ end
 
 function __fish_kubectl_get_containers_for_pod -a pod
   __fish_kubectl get pods "$pod" -o 'jsonpath={.spec.containers[*].name}'
-end
-
-function __fish_kubectl_get_crds
-  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
 end
 
 function __fish_kubectl_get_crd_resources -a crd
@@ -330,7 +356,12 @@ function __kubectl_flag_requires_arg -a arg
 end
 
 function __kubectl_complete_subcommand_flags
-  set -l rawOptions (__fish_kubectl $argv -h | awk '/Options:/,/Usage:/' | egrep -v 'Options:|Usage:' | awk 'NF > 0' | awk -F ':' '{print $1 "|" $2}')
+  set -l cmd (string join "" $argv)
+  if contains -- $cmd $__fish_kubectl_subresources_completed
+    return
+  end
+  set -a ___fish_kubectl_print_current_resources $cmd
+  set -l rawOptions (kubectl $argv -h | awk '/Options:/,/Usage:/' | egrep -v 'Options:|Usage:' | awk 'NF > 0' | awk -F ':' '{print $1 "|" $2}')
   for opt in $rawOptions
     if set -l matches (string match -r --entire "\s\s\-?([^,]+)?,? \-\-([^=]+)=([^\|]+)\|\s?(.*)" $opt)
       set -l short (string trim $matches[2])
@@ -458,7 +489,7 @@ for subcmd in $__fish_kubectl_subresource_commands
     complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource storageclasses)' -d 'Storage Class'
   end
   complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $__fish_kubectl_crds" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
 end
 
 # logs
@@ -493,12 +524,17 @@ __kubectl_complete_subcommand_flags attach
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a autoscale -d "Auto-scale a Deployment, ReplicaSet, or ReplicationController"
 __kubectl_complete_subcommand_flags autoscale
 
+function __fish_kubectl_complete_flags_for_subcommands -a cmd
+  set -l subcmds (__kubectl_get_possible_commands $cmd)
+  for subcmd in $subcmds
+    __kubectl_complete_subcommand_flags $cmd $subcmd
+  end
+end
+
 # cluster-info
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cluster-info -d "Display cluster info"
 __kubectl_complete_subcommand_flags cluster-info
-for subcmd in (__kubectl_get_possible_commands cluster-info)
-  __kubectl_complete_subcommand_flags cluster-info $subcmd
-end
+__fish_kubectl_complete_flags_for_subcommands cluster-info
 
 # completion
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a completion -d "Output shell completion code for the given shell (bash or zsh)"
@@ -518,9 +554,7 @@ __kubectl_complete_subcommand_flags cordon
 # create
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a create -d "Create a resource by filename or stdin"
 complete -c kubectl -A -f -n '__fish_seen_subcommand_from create; and not __fish_seen_subcommand_from (__kubectl_get_possible_commands create)' -a '(__kubectl_get_possible_commands_with_description create)'
-for subcmd in (__kubectl_get_possible_commands create)
-  __kubectl_complete_subcommand_flags create $subcmd
-end
+__fish_kubectl_complete_flags_for_subcommands create
 
 # drain
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a drain -d "Drain node in preparation for maintenance"
@@ -559,9 +593,9 @@ __kubectl_complete_subcommand_flags proxy
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a replace -d "Replace a resource by filename or stdin."
 __kubectl_complete_subcommand_flags replace
 
-# rolling-update
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rolling-update -d "Perform a rolling update of the given ReplicationController."
-__kubectl_complete_subcommand_flags rolling-update
+# # rolling-update
+# complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rolling-update -d "Perform a rolling update of the given ReplicationController."
+# __kubectl_complete_subcommand_flags rolling-update
 
 # rollout
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rollout -d "Manage rollout of a resource"
@@ -577,9 +611,7 @@ __kubectl_complete_subcommand_flags scale
 
 # set
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a set -d "Set specific features on objects"
-for subcmd in (__kubectl_get_possible_commands set)
-  __kubectl_complete_subcommand_flags set $subcmd
-end
+__fish_kubectl_complete_flags_for_subcommands set
 
 # taint
 complete -c kubectl -f -n '__fish_kubectl_needs_command' -a taint -d "Update the taints on one or more nodes"
