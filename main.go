@@ -69,15 +69,8 @@ set __fish_kubectl_resources        \
   statefulsets sts                  \
   storageclass storageclasses sc
 
-set __fish_kubectl_crds
-
 function __fish_kubectl_get_crds
-  if not set -q __fish_kubectl_crds
-    set __fish_kubectl_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}')
-  end
-  for i in $__fish_kubectl_crds
-    echo $i
-  end
+  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
 end
 
 function __fish_kubectl_seen_subcommand_from_regex
@@ -194,10 +187,36 @@ function __fish_kubectl_print_resource_types
     echo $r
   end
 
-  set -l crds (
+  set -l crds (__fish_kubectl_get_crds)
 
   for r in $crds
     echo $r
+  end
+end
+
+function __fish_kubectl_print_current_resources -d 'Prints current resources'
+  set -l found 0
+  # There is probably a better way to do this...
+  # found === 1 means that we have not yet found the crd type
+  # found === 2 means that we have not yet found the crd name, but have found the type
+  set -l current_resource
+  set -l crd_types (__fish_kubectl_get_crds)
+  for i in (commandline -opc)
+    if test $found -eq 0
+      if contains -- $i $__fish_kubectl_subresource_commands
+        set found 1
+      end
+    end
+
+    if test $found -eq 1
+      if contains -- $i $crd_types
+        set -l out (__fish_kubectl_print_resource $i)
+        for item in $out
+          echo "$item"
+        end
+        return 0
+      end
+    end
   end
 end
 
