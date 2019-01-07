@@ -9,6 +9,15 @@ $ git clone https://github.com/evanlucas/fish-kubectl-completions
 $ ln -s ../fish-kubectl-completions/kubectl.fish completions/
 ```
 
+## Building
+
+This was tested using go 1.11.1 on macOS.
+
+```console
+$ go build
+$ ./kcfishgen > kubectl.fish
+```
+
 ## Environment Variables
 
 ### `FISH_KUBECTL_COMPLETION_TIMEOUT`

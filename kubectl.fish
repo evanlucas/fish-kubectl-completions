@@ -1,103 +1,157 @@
-set __kubectl_commands \
-  annotate             \
-  api-versions         \
-  apply                \
-  attach               \
-  auth                 \
-  autoscale            \
-  certificate          \
-  cluster-info         \
-  completion           \
-  config               \
-  convert              \
-  cordon               \
-  cp                   \
-  create               \
-  delete               \
-  describe             \
-  drain                \
-  edit                 \
-  exec                 \
-  explain              \
-  expose               \
-  get                  \
-  help                 \
-  label                \
-  logs                 \
-  patch                \
-  plugin               \
-  port-forward         \
-  proxy                \
-  replace              \
-  rolling-update       \
-  rollout              \
-  run                  \
-  run-container        \
-  scale                \
-  set                  \
-  taint                \
-  top                  \
-  uncordon             \
-  version
-
-set __kubectl_resources          \
-  all                            \
-  certificatesigningrequests csr \
-  clusterrolebindings            \
-  clusterroles                   \
-  clusters                       \
-  componentstatuses cs           \
-  configmaps configmap cm        \
-  controllerrevisions            \
-  cronjobs                       \
-  customresourcedefinition crd   \
-  daemonsets ds                  \
-  deployments deployment deploy  \
-  endpoints ep                   \
-  events ev                      \
-  horizontalpodautoscalers hpa   \
-  ingresses ingress ing          \
-  jobs                           \
-  limitranges limits             \
-  namespaces namespace ns        \
-  networkpolicies netpol         \
-  nodes node no                  \
-  persistentvolumeclaims pvc     \
-  persistentvolumes pv           \
-  poddisruptionbudgets pdb       \
-  podpreset                      \
-  pods pod po                    \
-  podsecuritypolicies psp        \
-  podtemplates                   \
-  replicasets rs                 \
-  replicationcontrollers rc      \
-  resourcequotas quota           \
-  rolebindings                   \
-  roles                          \
-  secrets secret                 \
-  serviceaccounts sa             \
-  services service svc           \
-  statefulsets sts               \
-  storageclass storageclasses sc
-
+#
 set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
-set __k8s_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
+set __fish_kubectl_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
+set __fish_kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
 set __fish_kubectl_subresource_commands get describe delete edit label explain
-
-set __kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
-set __fish_kubectl_subresources_completed
+set __fish_kubectl_commands alpha \
+  annotate \
+  api-resources \
+  api-versions \
+  apply \
+  attach \
+  auth \
+  autoscale \
+  certificate \
+  cluster-info \
+  completion \
+  config \
+  convert \
+  cordon \
+  cp \
+  create \
+  delete \
+  describe \
+  drain \
+  edit \
+  exec \
+  explain \
+  expose \
+  get \
+  label \
+  logs \
+  log \
+  options \
+  patch \
+  plugin \
+  port-forward \
+  proxy \
+  replace \
+  rolling-update \
+  rollout \
+  run \
+  run-container \
+  scale \
+  set \
+  taint \
+  top \
+  uncordon \
+  version \
+  wait
 
 function __fish_kubectl
-  command kubectl $__k8s_timeout $argv
+	echo "kubectl $argv" >> ~/Desktop/kubectl.log
+  command kubectl $__fish_kubectl_timeout $argv
 end
+
+function __fish_kubectl_get_commands
+  echo alpha\t'Commands for features in alpha'
+  echo annotate\t'Update the annotations on a resource'
+  echo api-resources\t'Print the supported API resources on the server'
+  echo api-versions\t'Print the supported API versions on the server, in the form of "group/version"'
+  echo apply\t'Apply a configuration to a resource by filename or stdin'
+  echo attach\t'Attach to a running container'
+  echo auth\t'Inspect authorization'
+  echo autoscale\t'Auto-scale a Deployment, ReplicaSet, or ReplicationController'
+  echo certificate\t'Modify certificate resources.'
+  echo cluster-info\t'Display cluster info'
+  echo completion\t'Output shell completion code for the specified shell (bash or zsh)'
+  echo config\t'Modify kubeconfig files'
+  echo convert\t'Convert config files between different API versions'
+  echo cordon\t'Mark node as unschedulable'
+  echo cp\t'Copy files and directories to and from containers.'
+  echo create\t'Create a resource from a file or from stdin.'
+  echo delete\t'Delete resources by filenames, stdin, resources and names, or by resources and label selector'
+  echo describe\t'Show details of a specific resource or group of resources'
+  echo drain\t'Drain node in preparation for maintenance'
+  echo edit\t'Edit a resource on the server'
+  echo exec\t'Execute a command in a container'
+  echo explain\t'Documentation of resources'
+  echo expose\t'Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service'
+  echo get\t'Display one or many resources'
+  echo label\t'Update the labels on a resource'
+  echo logs\t'Print the logs for a container in a pod'
+  echo log\t'Print the logs for a container in a pod'
+  echo options\t'Print the list of flags inherited by all commands'
+  echo patch\t'Update field(s) of a resource using strategic merge patch'
+  echo plugin\t'Provides utilities for interacting with plugins.'
+  echo port-forward\t'Forward one or more local ports to a pod'
+  echo proxy\t'Run a proxy to the Kubernetes API server'
+  echo replace\t'Replace a resource by filename or stdin'
+  echo rolling-update\t'Perform a rolling update. This command is deprecated, use rollout instead.'
+  echo rollout\t'Manage the rollout of a resource'
+  echo run\t'Run a particular image on the cluster'
+  echo run-container\t'Run a particular image on the cluster. This command is deprecated, use "run" instead'
+  echo scale\t'Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job'
+  echo set\t'Set specific features on objects'
+  echo taint\t'Update the taints on one or more nodes'
+  echo top\t'Display Resource (CPU/Memory/Storage) usage.'
+  echo uncordon\t'Mark node as schedulable'
+  echo version\t'Print the client and server version information'
+  echo wait\t'Experimental: Wait for a specific condition on one or many resources.'
+end
+
+set __fish_kubectl_resources        \
+  all                               \
+  certificatesigningrequests csr    \
+  clusterrolebindings               \
+  clusterroles                      \
+  clusters                          \
+  componentstatuses cs              \
+  configmaps configmap cm           \
+  controllerrevisions               \
+  cronjobs cj                       \
+  customresourcedefinition crd crds \
+  daemonsets ds                     \
+  deployments deployment deploy     \
+  endpoints ep                      \
+  events ev                         \
+  horizontalpodautoscalers hpa      \
+  ingresses ingress ing             \
+  jobs job                          \
+  limitranges limits                \
+  namespaces namespace ns           \
+  networkpolicies netpol            \
+  nodes node no                     \
+  persistentvolumeclaims pvc        \
+  persistentvolumes pv              \
+  poddisruptionbudgets pdb          \
+  podpreset                         \
+  pods pod po                       \
+  podsecuritypolicies psp           \
+  podtemplates                      \
+  replicasets rs                    \
+  replicationcontrollers rc         \
+  resourcequotas quota              \
+  rolebindings                      \
+  roles                             \
+  secrets secret                    \
+  serviceaccounts sa                \
+  services service svc              \
+  statefulsets sts                  \
+  storageclass storageclasses sc
+
+set __fish_kubectl_crds
 
 function __fish_kubectl_get_crds
-  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
+	if not set -q __fish_kubectl_crds
+		set __fish_kubectl_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}')
+	end
+	for i in $set __fish_kubectl_crds
+		echo $i
+	end
 end
 
-set __fish_kubectl_crds (__fish_kubectl_get_crds)
-
-function __kubectl_seen_subcommand_from_regex
+function __fish_kubectl_seen_subcommand_from_regex
   set -l cmd (commandline -poc)
   set -e cmd[1]
   for i in $cmd
@@ -110,21 +164,9 @@ function __kubectl_seen_subcommand_from_regex
   return 1
 end
 
-function __kubectl_get_possible_commands_with_description -a cmd
-  kubectl $cmd -h \
-    | awk '/Available Commands:/,/Options:|Usage:/' \
-    | egrep -v 'Available Commands:|Usage:|Options:' \
-    | awk 'NF > 0' \
-    | awk '{printf $1 "\t" "\'"}{for(i=2;i<=NF;i++) printf( (i==NF) ? "%s" : "%s ", $i) } {print "\'"}'
-end
-
-function __kubectl_get_possible_commands -a cmd
-  __kubectl_get_possible_commands_with_description $cmd | awk '{print $1}'
-end
-
 function __fish_kubectl_needs_command -d 'Test if kubectl has yet to be given the subcommand'
   for i in (commandline -opc)
-    if contains -- $i $__kubectl_commands
+    if contains -- $i $__fish_kubectl_commands
       echo "$i"
       return 1
     end
@@ -133,7 +175,7 @@ function __fish_kubectl_needs_command -d 'Test if kubectl has yet to be given th
 end
 
 function __fish_kubectl_needs_resource -d 'Test if kubectl has yet to be given the subcommand resource'
-  set -l resources (__fish_print_resource_types)
+  set -l resources (__fish_kubectl_print_resource_types)
   for i in (commandline -opc)
     if contains -- $i $resources
       return 1
@@ -166,76 +208,7 @@ function __fish_kubectl_using_resource
   return 1
 end
 
-function __fish_kubectl_get_namespace -d 'Gets the namespace for the current command'
-  set -l cmd (commandline -opc)
-  if [ (count $cmd) -eq 0 ]
-    echo ""
-    return 0
-  else
-    set -l foundNamespace 0
-    for c in $cmd
-      test $foundNamespace -eq 1
-      and echo "$c"
-      and return 0
-      if contains -- $c "--namespace" "-n"
-        set foundNamespace 1
-      end
-    end
-
-    return 1
-  end
-end
-
-function __fish_kubectl_all_namespaces -d 'Was --all-namespaces passed'
-  for i in (commandline -opc)
-    if contains -- $i $__kubectl_all_namespaces_flags
-      echo 1
-      return 1
-    end
-  end
-  echo 0
-  return 0
-end
-
-function __fish_kubectl_print_current_resources -d 'Prints current resources'
-  set -l found 0
-  # There is probably a better way to do this...
-  # found === 1 means that we have not yet found the crd type
-  # found === 2 means that we have not yet found the crd name, but have found the type
-  set -l current_resource
-  set -l crd_types $__fish_kubectl_crds
-  for i in (commandline -opc)
-    if test $found -eq 0
-      if contains -- $i $__fish_kubectl_subresource_commands
-        set found 1
-      end
-    end
-
-    if test $found -eq 1
-      if contains -- $i $crd_types
-        set -l out (__fish_print_resource $i)
-        for item in $out
-          echo "$item"
-        end
-        return 0
-      end
-    end
-  end
-end
-
-function __kubectl_print_matching_resources
-  set -l last (commandline -opt)
-  if not set -l matches (string match -r "(.*)/" $last)
-    return
-  end
-  set -l prefix $matches[2]
-  set -l resources (__fish_print_resource "$prefix")
-  for i in $resources
-    echo "$prefix/$i"
-  end
-end
-
-function __kubectl_has_partial_resource_match
+function __fish_kubectl_has_partial_resource_match
   set -l last (commandline -opt)
   if not set -l matches (string match "(.*)/" $last)
     return
@@ -248,6 +221,18 @@ function __kubectl_has_partial_resource_match
   return 1
 end
 
+function __fish_kubectl_print_matching_resources
+  set -l last (commandline -opt)
+  if not set -l matches (string match -r "(.*)/" $last)
+    return
+  end
+  set -l prefix $matches[2]
+  set -l resources (__fish_kubectl_print_resource "$prefix")
+  for i in $resources
+    echo "$prefix/$i"
+  end
+end
+
 function __fish_kubectl_get_ns_flags
   set -l cmd (commandline -opc)
   if [ (count $cmd) -eq 0 ]
@@ -257,7 +242,6 @@ function __fish_kubectl_get_ns_flags
   set -l foundNamespace 0
 
   for c in $cmd
-    echo "get ns: $c $foundNamespace" > /tmp/kubectl_debug.log
     test $foundNamespace -eq 1
     set -l out "--namespace" "$c"
     and echo $out
@@ -276,8 +260,19 @@ function __fish_kubectl_get_ns_flags
   return 1
 end
 
-function __fish_print_resource -d 'Print a list of resources' -a resource
-  echo "__fish_print_resource: ns_flag: $ns_flags" > /tmp/kubectl_debug.log
+function __fish_kubectl_print_resource_types
+  for r in $__fish_kubectl_resources
+    echo $r
+  end
+
+  set -l crds (
+
+  for r in $crds
+    echo $r
+  end
+end
+
+function __fish_kubectl_print_resource -d 'Print a list of resources' -a resource
   set -l args
   if set -l ns_flags (__fish_kubectl_get_ns_flags | string split " ")
     for ns in $ns_flags
@@ -289,350 +284,1279 @@ function __fish_print_resource -d 'Print a list of resources' -a resource
   __fish_kubectl $args | string replace -r '(.*)/' ''
 end
 
-function __fish_print_resource_types
-  for r in $__fish_kubectl_resources
-    echo $r
-  end
-
-  set -l crds $__fish_kubectl_crds
-
-  for r in $crds
-    echo $r
-  end
+function __fish_kubectl_get_config -a type
+	set -l template "{{ range .$type }}"'{{ .name }}{{"\n"}}{{ end }}'
+	__fish_kubectl config view -o template --template="$template"
 end
 
-function __fish_kubectl_get_subcommand
-  set -l cmd (commandline -poc)
-  set -e cmd[1]
-  for i in $cmd
-    if contains -- $i $argv
-      echo "$i"
-      return 0
+function __fish_kubectl_get_rollout_resources
+  set -l args
+  if set -l ns_flags (__fish_kubectl_get_ns_flags | string split " ")
+    for ns in $ns_flags
+      set -a args $ns
     end
   end
-  return 1
-end
 
-function __fish_kubectl_get_containers_for_pod -a pod
-  __fish_kubectl get pods "$pod" -o 'jsonpath={.spec.containers[*].name}'
-end
+  set -l template '{range .items[*]}{.metadata.name}{"\n"}{end}'
 
-function __fish_kubectl_get_crd_resources -a crd
-  __fish_kubectl get "$crd" -o jsonpath='{.items[*].metadata.name}'
-end
+  set -l deploys (__fish_kubectl $args get deploy -o jsonpath="$template")
+  set -l daemonsets (__fish_kubectl $args get ds -o jsonpath="$template")
+  set -l sts (__fish_kubectl $args get sts -o jsonpath="$template")
 
-# deployments, daemonsets, and statefulsets
-function __fish_kubectl_get_rollout_resources
-  set -l jsonpath '{range .items[*]}{.spec.template.spec.containers[*].name}{"\n"}{end}'
-  set -l deploys (__fish_kubectl get deploy -o jsonpath=$jsonpath)
-  set -l daemonsets (__fish_kubectl get daemonsets -o jsonpath=$jsonpath)
-  set -l statefulsets (__fish_kubectl get statefulsets -o jsonpath=$jsonpath)
   for i in $deploys
     echo "deploy/$i"
     echo "deployment/$i"
     echo "deployments/$i"
   end
+
   for i in $daemonsets
     echo "daemonset/$i"
     echo "daemonsets/$i"
     echo "ds/$i"
   end
-  for i in $statefulsets
+
+  for i in $sts
     echo "statefulset/$i"
     echo "statefulsets/$i"
     echo "sts/$i"
   end
 end
 
-function __kubectl_flag_requires_arg -a arg
-  set -l bools true false
-  for b in $bools
-    if test "$b" = "$arg"
-      return 1
-    end
-  end
-
-  return 0
-end
-
-function __kubectl_complete_subcommand_flags
-  set -l cmd (string join "" $argv)
-  if contains -- $cmd $__fish_kubectl_subresources_completed
-    return
-  end
-  set -a ___fish_kubectl_print_current_resources $cmd
-  set -l rawOptions (kubectl $argv -h | awk '/Options:/,/Usage:/' | egrep -v 'Options:|Usage:' | awk 'NF > 0' | awk -F ':' '{print $1 "|" $2}')
-  for opt in $rawOptions
-    if set -l matches (string match -r --entire "\s\s\-?([^,]+)?,? \-\-([^=]+)=([^\|]+)\|\s?(.*)" $opt)
-      set -l short (string trim $matches[2])
-      set -l long $matches[3]
-      set -l description $matches[5]
-      set -l args -c kubectl -A -f -n "__fish_seen_subcommand_from $argv"
-      if __kubectl_flag_requires_arg $matches[4]
-        set args $args -r
-      end
-
-      if test "$short" != ""
-        set args $args -s
-        set args $args "$short"
-      end
-
-      set args $args -l
-      set args $args $long
-      set args $args -d
-      set args $args "$description"
-      complete $args
-    end
-  end
-end
-
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a get -d "Display one or many resources"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a describe -d "Show details of a specific resource or group of resources"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a delete -d 'Delete resources by filenames, stdin, resources and names, or by resources and label selector.'
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a edit -d "Edit a resource on the server"
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a label -d "Update the labels on a resource"
+complete -c kubectl -f -n '__fish_kubectl_needs_command' -a '(__fish_kubectl_get_commands)'
 
 for subcmd in $__fish_kubectl_subresource_commands
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and not __fish_seen_subcommand_from (__fish_print_resource_types)" -a '(__fish_print_resource_types)' -d 'Resource'
-  __kubectl_complete_subcommand_flags $subcmd
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __kubectl_has_partial_resource_match" -a '(__kubectl_print_matching_resources)' -d 'Resource'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from all" -a '(__fish_print_resource all)' -d 'All'
-  for r in certificatesigningrequests csr
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource certificatesigningrequests)' -d 'Certificate Signing Requests'
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and not __fish_seen_subcommand_from (__fish_kubectl_print_resource_types)" -a '(__fish_kubectl_print_resource_types)' -d 'Resource'
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_kubectl_has_partial_resource_match" -a '(__fish_kubectl_print_matching_resources)' -d 'Resource'
+  for resource in $__fish_kubectl_resources
+    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $resource" -a "(__fish_kubectl_print_resource $resource)" -d "$resource"
   end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from clusterrolebindings" -a '(__fish_print_resource clusterrolebindings)' -d 'Cluster Role Bindings'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from clusterroles" -a '(__fish_print_resource clusterroles)' -d 'Cluster Roles'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from clusters" -a '(__fish_print_resource clusters)' -d 'Clusters'
-  for r in componentstatuses cs
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource componentstatuses)' -d 'Component Statuses'
-  end
-  for r in configmaps configmap cm
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource configmaps)' -d 'Config Map'
-  end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from controllerrevisions" -a '(__fish_print_resource controllerrevisions)' -d 'Controller Revision'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from cronjobs" -a '(__fish_print_resource cronjobs)' -d 'Cron Jobs'
-  for r in customresourcedefinition crd
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource customresourcedefinition)' -d 'Custom Resource Definition'
-  end
-  for r in daemonsets ds
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource daemonsets)' -d 'Daemon set'
-  end
-  for r in deployments deployment deploy
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource deployments)' -d 'Deployment'
-  end
-  for r in endpoints ep
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource endpoints)' -d 'Endpoint'
-  end
-  for r in events ev
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource events)' -d 'Event'
-  end
-  for r in horizontalpodautoscalers hpa
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource horizontalpodautoscalers)' -d 'Horizontal pod auto scalers'
-  end
-  for r in ingresses ingress ing
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource ingresses)' -d 'Ingress'
-  end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from jobs" -a '(__fish_print_resource jobs)' -d 'Job'
-  for r in limitranges limits
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource limitranges)' -d 'LimitRange'
-  end
-  for r in namespaces namespace ns
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource namespaces)' -d 'Namespace'
-  end
-  for r in networkpolicies netpol
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource networkpolicies)' -d 'Network Policy'
-  end
-  for r in nodes node no
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource nodes)' -d 'Node'
-  end
-  for r in persistentvolumeclaims pvc
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource persistentvolumeclaims)' -d 'Persistent Volume Claim'
-  end
-  for r in persistentvolumes pv
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource persistentvolumes)' -d 'Persistent Volume'
-  end
-  for r in poddisruptionbudgets pdb
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource poddisruptionbudgets)' -d 'Pod Disruption Budget'
-  end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from podpreset" -a '(__fish_print_resource podpreset)' -d 'Pod Preset'
-  for r in pods pod po
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource pods)' -d 'Pod'
-  end
-  for r in podsecuritypolicies psp
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource podsecuritypolicies)' -d 'Pod Security Policy'
-  end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from podtemplates" -a '(__fish_print_resource podtemplates)' -d 'Pod Template'
-  for r in replicasets rs
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource replicasets)' -d 'Replica Set'
-  end
-  for r in replicationcontrollers rc
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource replicationcontrollers)' -d 'Replication Controller'
-  end
-  for r in resourcequotas quota
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource resourcequotas)' -d 'Resource Quota'
-  end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from rolebindings" -a '(__fish_print_resource rolebindings)' -d 'Role Binding'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from roles" -a '(__fish_print_resource roles)' -d 'Role'
-  for r in secrets secret
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource secrets)' -d 'Secret'
-  end
-  for r in serviceaccounts sa
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource serviceaccounts)' -d 'Service Account'
-  end
-  for r in services service svc
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource services)' -d 'Service'
-  end
-  for r in statefulsets sts
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource statefulsets)' -d 'Stateful Set'
-  end
-  for r in storageclass storageclasses sc
-    complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $r" -a '(__fish_print_resource storageclasses)' -d 'Storage Class'
-  end
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from resources" -a '(__fish_print_resource resources)' -d 'Resource'
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $__fish_kubectl_crds" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
+
+  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
 end
 
-# logs
-for subcmd in log logs
-  complete -c kubectl -f -n '__fish_kubectl_needs_command' -a $subcmd -d 'Print the logs for a container in a pod.'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -s c -l container -d 'Print the logs of this container'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -s f -l follow -d 'Follow log output'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -l include-extended-apis -d 'If true, include definitions of new APIs via calls to the API server. [default true]'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -l interactive -d 'If true, prompt the user for input when required.'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -r -s l -l selector -d 'Selector (label query) to filter on'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -s p -l previous -d 'Previous instance'
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd" -a '(__fish_print_resource pods)' -d "Pod"
-  __kubectl_complete_subcommand_flags $subcmd
+complete -c kubectl -f -n "__fish_seen_subcommand_from log logs exec port-forward" -a '(__fish_kubectl_print_resource pods)' -d 'Pod'
+complete -c kubectl -f -n "__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po pod pods" -a '(__fish_kubectl_print_resource pods)' -d 'Pod'
+complete -c kubectl -f -n "__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no node nodes" -a '(__fish_kubectl_print_resource nodes)' -d 'Node'
+
+for subcmd in cordon uncordon drain taint
+	complete -c kubectl -f -n "__fish_seen_subcommand_from $subcmd" -a '(__fish_kubectl_print_resource nodes)' -d 'Node'
 end
 
-# api-versions
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a api-versions -d "Print the supported API versions on the server, in the form of \"group/version\"."
+set -l __fish_kubectl_config_complete_contexts \
+  delete-context \
+  get-contexts \
+  rename-contexts \
+  set-context \
+  use-context
 
-# apply
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a apply -d "Apply a configuration to a resource by filename or stdin"
-__kubectl_complete_subcommand_flags apply
+set -l __fish_kubectl_config_complete_clusters \
+  delete-cluster \
+  get-clusters \
+  set-cluster
 
-# annotate
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a annotate -d "Update the annotations on a resource"
-__kubectl_complete_subcommand_flags annotate
+complete -c kubectl -f -n "__fish_seen_subcommand_from config; and __fish_seen_subcommand_from $__fish_kubectl_config_complete_contexts" -a '(__fish_kubectl_get_config contexts)' -d 'Context'
+complete -c kubectl -f -n "__fish_seen_subcommand_from config; and __fish_seen_subcommand_from $__fish_kubectl_config_complete_clusters" -a '(__fish_kubectl_get_config clusters)' -d 'Cluster'
+complete -c kubectl -f -n "__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from (__fish_kubectl_get_rollout_commands_without_descriptions)" -a '(__fish_kubectl_get_rollout_resources)'
+complete -c kubectl -f -l alsologtostderr -d 'log to standard error as well as files'
+complete -c kubectl -f -r -l as -d 'Username to impersonate for the operation'
+complete -c kubectl -f -r -l as-group -d 'Group to impersonate for the operation, this flag can be repeated to specify multiple groups.'
+complete -c kubectl -r -l cache-dir -d 'Default HTTP cache directory'
+complete -c kubectl -r -l certificate-authority -d 'Path to a cert file for the certificate authority'
+complete -c kubectl -r -l client-certificate -d 'Path to a client certificate file for TLS'
+complete -c kubectl -r -l client-key -d 'Path to a client key file for TLS'
+complete -c kubectl -f -r -l cluster -d 'The name of the kubeconfig cluster to use' -a '(__fish_kubectl_get_config clusters)'
+complete -c kubectl -f -r -l context -d 'The name of the kubeconfig context to use' -a '(__fish_kubectl_get_config contexts)'
+complete -c kubectl -f -l insecure-skip-tls-verify -d 'If true, the server\'s certificate will not be checked for validity. This will make your HTTPS connections insecure'
+complete -c kubectl -r -l kubeconfig -d 'Path to the kubeconfig file to use for CLI requests.'
+complete -c kubectl -f -r -l log-backtrace-at -d 'when logging hits line file:N, emit a stack trace'
+complete -c kubectl -r -l log-dir -d 'If non-empty, write log files in this directory'
+complete -c kubectl -f -l logtostderr -d 'log to standard error instead of files'
+complete -c kubectl -f -l match-server-version -d 'Require server version to match client version'
+complete -c kubectl -f -r -s n -l namespace -d 'If present, the namespace scope for this CLI request' -a '(__fish_kubectl_print_resource namespace)'
+complete -c kubectl -f -r -l request-timeout -d 'The length of time to wait before giving up on a single server request. Non-zero values should contain a corresponding time unit (e.g. 1s, 2m, 3h). A value of zero means don\'t timeout requests.'
+complete -c kubectl -f -r -s s -l server -d 'The address and port of the Kubernetes API server'
+complete -c kubectl -f -r -l stderrthreshold -d 'logs at or above this threshold go to stderr'
+complete -c kubectl -f -r -l token -d 'Bearer token for authentication to the API server'
+complete -c kubectl -f -r -l user -d 'The name of the kubeconfig user to use' -a '(__fish_kubectl_get_config users)'
+complete -c kubectl -f -r -s v -l v -d 'log level for V logs'
+complete -c kubectl -f -r -l vmodule -d 'comma-separated list of pattern=N settings for file-filtered logging'
 
-# attach
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a attach -d "Attach to a running container."
-__kubectl_complete_subcommand_flags attach
-
-# autoscale
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a autoscale -d "Auto-scale a Deployment, ReplicaSet, or ReplicationController"
-__kubectl_complete_subcommand_flags autoscale
-
-function __fish_kubectl_complete_flags_for_subcommands -a cmd
-  set -l subcmds (__kubectl_get_possible_commands $cmd)
-  for subcmd in $subcmds
-    __kubectl_complete_subcommand_flags $cmd $subcmd
-  end
+# Completions for the "kubectl alpha" command
+function __fish_kubectl_get_alpha_commands
+  echo diff\t'Diff different versions of configurations'
 end
 
-# cluster-info
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cluster-info -d "Display cluster info"
-__kubectl_complete_subcommand_flags cluster-info
-__fish_kubectl_complete_flags_for_subcommands cluster-info
-
-# completion
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a completion -d "Output shell completion code for the given shell (bash or zsh)"
-
-# config
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a config -d "config modifies kubeconfig files"
-complete -c kubectl -f -n '__fish_kubectl_using_command config; and __fish_seen_subcommand_from use-context delete-context' -a '(kubectl config get-contexts -o name)'
-
-# convert
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a convert -d "Convert config files between different API versions"
-__kubectl_complete_subcommand_flags convert
-
-# cordon
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a cordon -d "Mark node as unschedulable"
-__kubectl_complete_subcommand_flags cordon
-
-# create
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a create -d "Create a resource by filename or stdin"
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from create; and not __fish_seen_subcommand_from (__kubectl_get_possible_commands create)' -a '(__kubectl_get_possible_commands_with_description create)'
-__fish_kubectl_complete_flags_for_subcommands create
-
-# drain
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a drain -d "Drain node in preparation for maintenance"
-__kubectl_complete_subcommand_flags drain
-
-# exec
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a exec -d 'Execute a command in a container.'
-__kubectl_complete_subcommand_flags exec
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from exec' -a '(__fish_print_resource pods)' -d "Pod"
-
-# explain
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a explain -d "Documentation of resources."
-__kubectl_complete_subcommand_flags explain
-
-# expose
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a expose -d "Take a replication controller, service, deployment or pod and expose it as a new Kubernetes Service"
-__kubectl_complete_subcommand_flags expose
-
-# patch
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a patch -d "Update field(s) of a resource using strategic merge patch."
-__kubectl_complete_subcommand_flags patch
-
-# plugin
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a plugin -d "config modifies kubeconfig files"
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from plugin; and not __fish_seen_subcommand_from (__kubectl_get_possible_commands plugin)' -a '(__kubectl_get_possible_commands_with_description plugin)'
-
-# port-forward
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a port-forward -d "Forward one or more local ports to a pod."
-complete -c kubectl -A -f -n '__fish_seen_subcommand_from port-forward' -a '(__fish_print_resource pods)' -d "Pod"
-
-# proxy
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a proxy -d "Run a proxy to the Kubernetes API server"
-__kubectl_complete_subcommand_flags proxy
-
-# replace
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a replace -d "Replace a resource by filename or stdin."
-__kubectl_complete_subcommand_flags replace
-
-# # rolling-update
-# complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rolling-update -d "Perform a rolling update of the given ReplicationController."
-# __kubectl_complete_subcommand_flags rolling-update
-
-# rollout
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a rollout -d "Manage rollout of a resource"
-complete -c kubectl -f -n '__fish_kubectl_using_command rollout; and __fish_seen_subcommand_from (__kubectl_get_possible_commands rollout)' -a '(__fish_kubectl_get_rollout_resources)'
-
-# run
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a run -d "Run a particular image on the cluster."
-__kubectl_complete_subcommand_flags run
-
-# scale
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a scale -d "Set a new size for a Deployment, ReplicaSet, Replication Controller, or Job."
-__kubectl_complete_subcommand_flags scale
-
-# set
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a set -d "Set specific features on objects"
-__fish_kubectl_complete_flags_for_subcommands set
-
-# taint
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a taint -d "Update the taints on one or more nodes"
-__kubectl_complete_subcommand_flags taint
-
-# uncordon
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a uncordon -d "Mark node as schedulable"
-__kubectl_complete_subcommand_flags uncordon
-
-# version
-complete -c kubectl -f -n '__fish_kubectl_needs_command' -a version -d "Print the client and server version information."
-__kubectl_complete_subcommand_flags version
-
-# subcommands with subscommands
-set __fish_kubectl_subcmdswithsubcmds \
-  apply                               \
-  cluster-info                        \
-  config                              \
-  rollout                             \
-  set
-
-for subcmd in $__fish_kubectl_subcmdswithsubcmds
-  complete -c kubectl -A -f -n "__fish_seen_subcommand_from $subcmd; and not __fish_seen_subcommand_from (__kubectl_get_possible_commands $subcmd)" -a "(__kubectl_get_possible_commands_with_description $subcmd)"
+function __fish_kubectl_get_alpha_commands_without_descriptions
+  __fish_kubectl_get_alpha_commands | string replace -r '\t.*$' ''
 end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command alpha; and not __fish_seen_subcommand_from (__fish_kubectl_get_alpha_commands_without_descriptions)" -a '(__fish_kubectl_get_alpha_commands)'
+
+# Completions for the "kubectl alpha diff" command
+complete -c kubectl -n '__fish_seen_subcommand_from alpha; and __fish_seen_subcommand_from diff' -r -s f -l filename -d 'Filename, directory, or URL to files contains the configuration to diff'
+complete -c kubectl -f -n '__fish_seen_subcommand_from alpha; and __fish_seen_subcommand_from diff' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+
+# Completions for the "kubectl annotate" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -r -l field-selector -d 'Selector (field query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. --field-selector key1=value1,key2=value2). The server only supports a limited number of field queries per type.'
+complete -c kubectl -n '__fish_seen_subcommand_from annotate' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to update the annotation'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l local -d 'If true, annotation will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l overwrite -d 'If true, allow annotations to be overwritten, otherwise reject annotation updates that overwrite existing annotations.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -r -l resource-version -d 'If non-empty, the annotation update will only succeed if this is the current resource-version for the object. Only valid when specifying a single resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from annotate' -r -s l -l selector -d 'Selector (label query) to filter on, not including uninitialized ones, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2).'
+complete -c kubectl -n '__fish_seen_subcommand_from annotate' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl api-resources" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from api-resources' -r -l api-group -d 'Limit to resources in the specified API group.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from api-resources' -l cached -d 'Use the cached list of resources if available.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from api-resources' -l namespaced -d 'If false, non-namespaced resources will be returned, otherwise returning namespaced resources by default.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from api-resources' -l no-headers -d 'When using the default or custom-column output format, don\'t print headers (default print headers).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from api-resources' -r -s o -l output -d 'Output format. One of: wide|name.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from api-resources' -r -l verbs -d 'Limit to resources that support the specified verbs.'
+
+# Completions for the "kubectl apply" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l all -d 'Select all resources in the namespace of the specified resource types.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l cascade -d 'If true, cascade the deletion of the resources managed by this resource (e.g. Pods created by a ReplicationController).  Default true.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from apply' -r -s f -l filename -d 'that contains the configuration to apply'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l force -d 'Only used when grace-period=0. If true, immediately remove resources from API and bypass graceful deletion. Note that immediate deletion of some resources may result in inconsistency or data loss and requires confirmation.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -r -l grace-period -d 'Period of time in seconds given to the resource to terminate gracefully. Ignored if negative. Set to 1 for immediate shutdown. Can only be set to 0 when --force is true (force deletion).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l openapi-patch -d 'If true, use openapi to calculate diff when the openapi presents and the resource can be found in the openapi spec. Otherwise, fall back to use baked-in types.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l overwrite -d 'Automatically resolve conflicts between the modified and live configuration by using values from the modified configuration'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l prune -d 'Automatically delete resource objects, including the uninitialized ones, that do not appear in the configs and are created by either apply or create --save-config. Should be used with either -l or --all.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -r -l prune-whitelist -d 'Overwrite the default whitelist with <group/version/kind> for --prune'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l server-dry-run -d 'If true, request will be sent to server with dry-run flag, which means the modifications won\'t be persisted. This is an alpha feature and flag.'
+complete -c kubectl -n '__fish_seen_subcommand_from apply' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -r -l timeout -d 'The length of time to wait before giving up on a delete, zero means determine a timeout from the size of the object'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply' -l wait -d 'If true, wait for resources to be gone before returning. This waits for finalizers.'
+function __fish_kubectl_get_apply_commands
+  echo edit-last-applied\t'Edit latest last-applied-configuration annotations of a resource/object'
+  echo set-last-applied\t'Set the last-applied-configuration annotation on a live object to match the contents of a file.'
+  echo view-last-applied\t'View latest last-applied-configuration annotations of a resource/object'
+end
+
+function __fish_kubectl_get_apply_commands_without_descriptions
+  __fish_kubectl_get_apply_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command apply; and not __fish_seen_subcommand_from (__fish_kubectl_get_apply_commands_without_descriptions)" -a '(__fish_kubectl_get_apply_commands)'
+
+# Completions for the "kubectl apply edit-last-applied" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -r -s f -l filename -d 'Filename, directory, or URL to files to use to edit the resource'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath-file|jsonpath.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from edit-last-applied' -l windows-line-endings -d 'Defaults to the line ending native to your platform.'
+
+# Completions for the "kubectl apply set-last-applied" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from set-last-applied' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from set-last-applied' -l create-annotation -d 'Will create \'last-applied-configuration\' annotations if current objects doesn\'t have one'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from set-last-applied' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from set-last-applied' -r -s f -l filename -d 'Filename, directory, or URL to files that contains the last-applied-configuration annotations'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from set-last-applied' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from set-last-applied' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl apply view-last-applied" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from view-last-applied' -l all -d 'Select all resources in the namespace of the specified resource types'
+complete -c kubectl -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from view-last-applied' -r -s f -l filename -d 'Filename, directory, or URL to files that contains the last-applied-configuration annotations'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from view-last-applied' -r -s o -l output -d 'Output format. Must be one of yaml|json'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from view-last-applied' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from apply; and __fish_seen_subcommand_from view-last-applied' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+
+# Completions for the "kubectl attach" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from attach' -r -s c -l container -d 'Container name. If omitted, the first container in the pod will be chosen'
+complete -c kubectl -f -n '__fish_seen_subcommand_from attach' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+complete -c kubectl -f -n '__fish_seen_subcommand_from attach' -s i -l stdin -d 'Pass stdin to the container'
+complete -c kubectl -f -n '__fish_seen_subcommand_from attach' -s t -l tty -d 'Stdin is a TTY'
+
+# Completions for the "kubectl auth" command
+function __fish_kubectl_get_auth_commands
+  echo can-i\t'Check whether an action is allowed'
+  echo reconcile\t'Reconciles rules for RBAC Role, RoleBinding, ClusterRole, and ClusterRole binding objects'
+end
+
+function __fish_kubectl_get_auth_commands_without_descriptions
+  __fish_kubectl_get_auth_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command auth; and not __fish_seen_subcommand_from (__fish_kubectl_get_auth_commands_without_descriptions)" -a '(__fish_kubectl_get_auth_commands)'
+
+# Completions for the "kubectl auth can-i" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from can-i' -l all-namespaces -d 'If true, check the specified action in all namespaces.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from can-i' -s q -l quiet -d 'If true, suppress output and just return the exit code.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from can-i' -r -l subresource -d 'SubResource such as pod/log or deployment/scale'
+
+# Completions for the "kubectl auth reconcile" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -l dry-run -d 'If true, display results but do not submit changes'
+complete -c kubectl -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to reconcile.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template-file|templatefile|template|go-template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -l remove-extra-permissions -d 'If true, removes extra permissions added to roles'
+complete -c kubectl -f -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -l remove-extra-subjects -d 'If true, removes extra subjects added to rolebindings'
+complete -c kubectl -n '__fish_seen_subcommand_from auth; and __fish_seen_subcommand_from reconcile' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl autoscale" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -r -l cpu-percent -d 'The target average CPU utilization (represented as a percent of requested CPU) over all the pods. If it\'s not specified or negative, a default autoscaling policy will be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from autoscale' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to autoscale.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -r -l generator -d 'The name of the API generator to use. Currently there is only 1 generator.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -r -l max -d 'The upper limit for the number of pods that can be set by the autoscaler. Required.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -r -l min -d 'The lower limit for the number of pods that can be set by the autoscaler. If it\'s not specified or negative, the server will apply a default value.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -r -l name -d 'The name for the newly created object. If not specified, the name of the input resource will be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template-file|templatefile|template|go-template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from autoscale' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from autoscale' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl certificate" command
+function __fish_kubectl_get_certificate_commands
+  echo approve\t'Approve a certificate signing request'
+  echo deny\t'Deny a certificate signing request'
+end
+
+function __fish_kubectl_get_certificate_commands_without_descriptions
+  __fish_kubectl_get_certificate_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command certificate; and not __fish_seen_subcommand_from (__fish_kubectl_get_certificate_commands_without_descriptions)" -a '(__fish_kubectl_get_certificate_commands)'
+
+# Completions for the "kubectl certificate approve" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from approve' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from approve' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to update'
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from approve' -l force -d 'Update the CSR even if it is already approved.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from approve' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from approve' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from approve' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl certificate deny" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from deny' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from deny' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to update'
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from deny' -l force -d 'Update the CSR even if it is already denied.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from deny' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath-file|jsonpath.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from deny' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from certificate; and __fish_seen_subcommand_from deny' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl cluster-info" command
+function __fish_kubectl_get_cluster_info_commands
+  echo dump\t'Dump lots of relevant info for debugging and diagnosis'
+end
+
+function __fish_kubectl_get_cluster_info_commands_without_descriptions
+  __fish_kubectl_get_cluster_info_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command cluster-info; and not __fish_seen_subcommand_from (__fish_kubectl_get_cluster_info_commands_without_descriptions)" -a '(__fish_kubectl_get_cluster_info_commands)'
+
+# Completions for the "kubectl cluster-info dump" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -l all-namespaces -d 'If true, dump all namespaces.  If true, --namespaces is ignored.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -r -l namespaces -d 'A comma separated list of namespaces to dump.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -r -l output-directory -d 'Where to output the files.  If empty or \'-\' uses stdout, otherwise creates a directory hierarchy in that directory'
+complete -c kubectl -f -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+complete -c kubectl -n '__fish_seen_subcommand_from cluster-info; and __fish_seen_subcommand_from dump' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl config" command
+function __fish_kubectl_get_config_commands
+  echo current-context\t'Displays the current-context'
+  echo delete-cluster\t'Delete the specified cluster from the kubeconfig'
+  echo delete-context\t'Delete the specified context from the kubeconfig'
+  echo get-clusters\t'Display clusters defined in the kubeconfig'
+  echo get-contexts\t'Describe one or many contexts'
+  echo rename-context\t'Renames a context from the kubeconfig file.'
+  echo set\t'Sets an individual value in a kubeconfig file'
+  echo set-cluster\t'Sets a cluster entry in kubeconfig'
+  echo set-context\t'Sets a context entry in kubeconfig'
+  echo set-credentials\t'Sets a user entry in kubeconfig'
+  echo unset\t'Unsets an individual value in a kubeconfig file'
+  echo use-context\t'Sets the current-context in a kubeconfig file'
+  echo use\t'Sets the current-context in a kubeconfig file'
+  echo view\t'Display merged kubeconfig settings or a specified kubeconfig file'
+end
+
+function __fish_kubectl_get_config_commands_without_descriptions
+  __fish_kubectl_get_config_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command config; and not __fish_seen_subcommand_from (__fish_kubectl_get_config_commands_without_descriptions)" -a '(__fish_kubectl_get_config_commands)'
+
+# Completions for the "kubectl config get-contexts" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from get-contexts' -l no-headers -d 'When using the default or custom-column output format, don\'t print headers (default print headers).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from get-contexts' -r -s o -l output -d 'Output format. One of: name'
+
+# Completions for the "kubectl config set" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set' -r -l set-raw-bytes -d 'When writing a []byte PROPERTY_VALUE, write the given string directly without base64 decoding.'
+
+# Completions for the "kubectl config set-cluster" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-cluster' -r -l embed-certs -d 'embed-certs for the cluster entry in kubeconfig'
+
+# Completions for the "kubectl config set-context" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-context' -l current -d 'Modify the current context'
+
+# Completions for the "kubectl config set-credentials" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-credentials' -r -l auth-provider -d 'Auth provider for the user entry in kubeconfig'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-credentials' -r -l auth-provider-arg -d '\'key=value\' arguments for the auth provider'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-credentials' -r -l embed-certs -d 'Embed client cert/key for the user entry in kubeconfig'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-credentials' -r -l password -d 'password for the user entry in kubeconfig'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from set-credentials' -r -l username -d 'username for the user entry in kubeconfig'
+
+# Completions for the "kubectl config view" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -l flatten -d 'Flatten the resulting kubeconfig file into self-contained output (useful for creating portable kubeconfig files)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -r -l merge -d 'Merge the full hierarchy of kubeconfig files'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -l minify -d 'Remove all information not used by current-context from the output'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -l raw -d 'Display raw byte data'
+complete -c kubectl -n '__fish_seen_subcommand_from config; and __fish_seen_subcommand_from view' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl convert" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from convert' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from convert' -r -s f -l filename -d 'Filename, directory, or URL to files to need to get converted.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from convert' -l local -d 'If true, convert will NOT try to contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from convert' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template|go-template-file|templatefile|template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from convert' -r -l output-version -d 'Output the formatted object with the given group version (for ex: \'extensions/v1beta1\').'
+complete -c kubectl -f -n '__fish_seen_subcommand_from convert' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from convert' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from convert' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl cordon" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from cordon' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from cordon' -r -s l -l selector -d 'Selector (label query) to filter on'
+
+# Completions for the "kubectl cp" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from cp' -r -s c -l container -d 'Container name. If omitted, the first container in the pod will be chosen'
+
+# Completions for the "kubectl create" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l edit -d 'Edit the API resource before creating'
+complete -c kubectl -n '__fish_seen_subcommand_from create' -r -s f -l filename -d 'Filename, directory, or URL to files to use to create the resource'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -r -l raw -d 'Raw URI to POST to the server.  Uses the transport specified by the kubeconfig file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -n '__fish_seen_subcommand_from create' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create' -l windows-line-endings -d 'Only relevant if --edit=true. Defaults to the line ending native to your platform.'
+function __fish_kubectl_get_create_commands
+  echo clusterrole\t'Create a ClusterRole.'
+  echo clusterrolebinding\t'Create a ClusterRoleBinding for a particular ClusterRole'
+  echo configmap\t'Create a configmap from a local file, directory or literal value'
+  echo cm\t'Create a configmap from a local file, directory or literal value'
+  echo deployment\t'Create a deployment with the specified name.'
+  echo deploy\t'Create a deployment with the specified name.'
+  echo job\t'Create a job with the specified name.'
+  echo namespace\t'Create a namespace with the specified name'
+  echo ns\t'Create a namespace with the specified name'
+  echo poddisruptionbudget\t'Create a pod disruption budget with the specified name.'
+  echo pdb\t'Create a pod disruption budget with the specified name.'
+  echo priorityclass\t'Create a priorityclass with the specified name.'
+  echo pc\t'Create a priorityclass with the specified name.'
+  echo quota\t'Create a quota with the specified name.'
+  echo resourcequota\t'Create a quota with the specified name.'
+  echo role\t'Create a role with single rule.'
+  echo rolebinding\t'Create a RoleBinding for a particular Role or ClusterRole'
+  echo secret\t'Create a secret using specified subcommand'
+  echo service\t'Create a service using specified subcommand.'
+  echo svc\t'Create a service using specified subcommand.'
+  echo serviceaccount\t'Create a service account with the specified name'
+  echo sa\t'Create a service account with the specified name'
+end
+
+function __fish_kubectl_get_create_commands_without_descriptions
+  __fish_kubectl_get_create_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command create; and not __fish_seen_subcommand_from (__fish_kubectl_get_create_commands_without_descriptions)" -a '(__fish_kubectl_get_create_commands)'
+
+# Completions for the "kubectl create clusterrole" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -l aggregation-rule -d 'An aggregation label selector for combining ClusterRoles.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -l non-resource-url -d 'A partial url that user should have access to.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template-file|templatefile|template|go-template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -l resource -d 'Resource that the rule applies to'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -l resource-name -d 'Resource in the white list that the rule applies to, repeat this flag for multiple items'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrole' -r -l verb -d 'Verb that applies to the resources contained in the rule'
+
+# Completions for the "kubectl create clusterrolebinding" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -r -l clusterrole -d 'ClusterRole this ClusterRoleBinding should reference'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -r -l group -d 'Groups to bind to the role'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -r -l serviceaccount -d 'Service accounts to bind to the role, in the format <namespace>:<name>'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from clusterrolebinding' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create configmap" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -l append-hash -d 'Append a hash of the configmap to its name.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -l append-hash -d 'Append a hash of the configmap to its name.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -r -l from-env-file -d 'Specify the path to a file to read lines of key=val pairs to create a configmap (i.e. a Docker .env file).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -r -l from-env-file -d 'Specify the path to a file to read lines of key=val pairs to create a configmap (i.e. a Docker .env file).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -r -l from-file -d 'Key file can be specified using its file path, in which case file basename will be used as configmap key, or optionally with a key and file path, in which case the given key will be used.  Specifying a directory will iterate each named file in the directory whose basename is a valid configmap key.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -r -l from-file -d 'Key file can be specified using its file path, in which case file basename will be used as configmap key, or optionally with a key and file path, in which case the given key will be used.  Specifying a directory will iterate each named file in the directory whose basename is a valid configmap key.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -r -l from-literal -d 'Specify a key and literal value to insert in configmap (i.e. mykey=somevalue)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -r -l from-literal -d 'Specify a key and literal value to insert in configmap (i.e. mykey=somevalue)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template|go-template-file|templatefile|template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template|go-template-file|templatefile|template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from configmap' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from cm' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create deployment" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -r -l image -d 'Image name to run.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -r -l image -d 'Image name to run.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deployment' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from deploy' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create job" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -r -l from -d 'The name of the resource to create a Job from (only cronjob is supported).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -r -l image -d 'Image name to run.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from job' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create namespace" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from namespace' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from ns' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create poddisruptionbudget" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -r -l max-unavailable -d 'The maximum number or percentage of unavailable pods this budget requires.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -r -l max-unavailable -d 'The maximum number or percentage of unavailable pods this budget requires.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -r -l min-available -d 'The minimum number or percentage of available pods this budget requires.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -r -l min-available -d 'The minimum number or percentage of available pods this budget requires.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -r -l selector -d 'A label selector to use for this budget. Only equality-based selector requirements are supported.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -r -l selector -d 'A label selector to use for this budget. Only equality-based selector requirements are supported.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from poddisruptionbudget' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pdb' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create priorityclass" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -r -l description -d 'description is an arbitrary string that usually provides guidelines on when this priority class should be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -r -l description -d 'description is an arbitrary string that usually provides guidelines on when this priority class should be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -l global-default -d 'global-default specifies whether this PriorityClass should be considered as the default priority.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -l global-default -d 'global-default specifies whether this PriorityClass should be considered as the default priority.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from priorityclass' -r -l value -d 'the value of this priority class.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from pc' -r -l value -d 'the value of this priority class.'
+
+# Completions for the "kubectl create quota" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -r -l hard -d 'A comma-delimited set of resource=quantity pairs that define a hard limit.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -r -l hard -d 'A comma-delimited set of resource=quantity pairs that define a hard limit.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -r -l scopes -d 'A comma-delimited set of quota scopes that must all match each object tracked by the quota.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -r -l scopes -d 'A comma-delimited set of quota scopes that must all match each object tracked by the quota.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from quota' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from resourcequota' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create role" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -r -l resource -d 'Resource that the rule applies to'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -r -l resource-name -d 'Resource in the white list that the rule applies to, repeat this flag for multiple items'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from role' -r -l verb -d 'Verb that applies to the resources contained in the rule'
+
+# Completions for the "kubectl create rolebinding" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -l clusterrole -d 'ClusterRole this RoleBinding should reference'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -l group -d 'Groups to bind to the role'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -l role -d 'Role this RoleBinding should reference'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -l serviceaccount -d 'Service accounts to bind to the role, in the format <namespace>:<name>'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from rolebinding' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create secret" command
+function __fish_kubectl_get_create_secret_commands
+  echo docker-registry\t'Create a secret for use with a Docker registry'
+  echo generic\t'Create a secret from a local file, directory or literal value'
+  echo tls\t'Create a TLS secret'
+end
+
+function __fish_kubectl_get_create_secret_commands_without_descriptions
+  __fish_kubectl_get_create_secret_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command secret; and not __fish_seen_subcommand_from (__fish_kubectl_get_create_secret_commands_without_descriptions)" -a '(__fish_kubectl_get_create_secret_commands)'
+
+# Completions for the "kubectl create secret docker-registry" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -l append-hash -d 'Append a hash of the secret to its name.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l docker-email -d 'Email for Docker registry'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l docker-password -d 'Password for Docker registry authentication'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l docker-server -d 'Server location for Docker registry'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l docker-username -d 'Username for Docker registry authentication'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l from-file -d 'Key files can be specified using their file path, in which case a default name will be given to them, or optionally with a name and file path, in which case the given name will be used.  Specifying a directory will iterate each named file in the directory that is a valid secret key.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template-file|templatefile|template|go-template|jsonpath-file|jsonpath.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from docker-registry' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create secret generic" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -l append-hash -d 'Append a hash of the secret to its name.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -l from-env-file -d 'Specify the path to a file to read lines of key=val pairs to create a secret (i.e. a Docker .env file).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -l from-file -d 'Key files can be specified using their file path, in which case a default name will be given to them, or optionally with a name and file path, in which case the given name will be used.  Specifying a directory will iterate each named file in the directory that is a valid secret key.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -l from-literal -d 'Specify a key and literal value to insert in secret (i.e. mykey=somevalue)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -r -l type -d 'The type of secret to create'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from generic' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create secret tls" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -l append-hash -d 'Append a hash of the secret to its name.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -r -l cert -d 'Path to PEM encoded public key certificate.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -r -l key -d 'Path to private key associated with given certificate.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from secret; and __fish_seen_subcommand_from tls' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create service" command
+function __fish_kubectl_get_create_service_commands
+  echo clusterip\t'Create a ClusterIP service.'
+  echo externalname\t'Create an ExternalName service.'
+  echo loadbalancer\t'Create a LoadBalancer service.'
+  echo nodeport\t'Create a NodePort service.'
+end
+
+function __fish_kubectl_get_create_service_commands_without_descriptions
+  __fish_kubectl_get_create_service_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command service; and not __fish_seen_subcommand_from (__fish_kubectl_get_create_service_commands_without_descriptions)" -a '(__fish_kubectl_get_create_service_commands)'
+complete -c kubectl -f -n "__fish_kubectl_using_command svc; and not __fish_seen_subcommand_from (__fish_kubectl_get_create_service_commands_without_descriptions)" -a '(__fish_kubectl_get_create_service_commands)'
+
+# Completions for the "kubectl create service clusterip" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -r -l clusterip -d 'Assign your own ClusterIP or set to \'None\' for a \'headless\' service (no loadbalancing).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -r -l tcp -d 'Port pairs can be specified as \'<port>:<targetPort>\'.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from clusterip' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create service externalname" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -r -l external-name -d 'External name of service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -r -l tcp -d 'Port pairs can be specified as \'<port>:<targetPort>\'.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from externalname' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create service loadbalancer" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template|go-template-file|templatefile|template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -r -l tcp -d 'Port pairs can be specified as \'<port>:<targetPort>\'.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from loadbalancer' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create service nodeport" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -r -l node-port -d 'Port used to expose the service on each node in a cluster.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -r -l tcp -d 'Port pairs can be specified as \'<port>:<targetPort>\'.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from service; and __fish_seen_subcommand_from nodeport' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl create serviceaccount" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -r -l generator -d 'The name of the API generator to use.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from serviceaccount' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from create; and __fish_seen_subcommand_from sa' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl delete" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l all -d 'Delete all resources, including uninitialized ones, in the namespace of the specified resource types.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l cascade -d 'If true, cascade the deletion of the resources managed by this resource (e.g. Pods created by a ReplicationController).  Default true.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -r -l field-selector -d 'Selector (field query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. --field-selector key1=value1,key2=value2). The server only supports a limited number of field queries per type.'
+complete -c kubectl -n '__fish_seen_subcommand_from delete' -r -s f -l filename -d 'containing the resource to delete.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l force -d 'Only used when grace-period=0. If true, immediately remove resources from API and bypass graceful deletion. Note that immediate deletion of some resources may result in inconsistency or data loss and requires confirmation.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -r -l grace-period -d 'Period of time in seconds given to the resource to terminate gracefully. Ignored if negative. Set to 1 for immediate shutdown. Can only be set to 0 when --force is true (force deletion).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l ignore-not-found -d 'Treat "resource not found" as a successful delete. Defaults to "true" when --all is specified.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l now -d 'If true, resources are signaled for immediate shutdown (same as --grace-period=1).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -r -s o -l output -d 'Output mode. Use "-o name" for shorter output (resource/name).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -r -s l -l selector -d 'Selector (label query) to filter on, not including uninitialized ones.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -r -l timeout -d 'The length of time to wait before giving up on a delete, zero means determine a timeout from the size of the object'
+complete -c kubectl -f -n '__fish_seen_subcommand_from delete' -l wait -d 'If true, wait for resources to be gone before returning. This waits for finalizers.'
+
+# Completions for the "kubectl describe" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from describe' -l all-namespaces -d 'If present, list the requested object(s) across all namespaces. Namespace in current context is ignored even if specified with --namespace.'
+complete -c kubectl -n '__fish_seen_subcommand_from describe' -r -s f -l filename -d 'Filename, directory, or URL to files containing the resource to describe'
+complete -c kubectl -f -n '__fish_seen_subcommand_from describe' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from describe' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from describe' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from describe' -l show-events -d 'If true, display events related to the described object.'
+
+# Completions for the "kubectl drain" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -l delete-local-data -d 'Continue even if there are pods using emptyDir (local data that will be deleted when the node is drained).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -l force -d 'Continue even if there are pods not managed by a ReplicationController, ReplicaSet, Job, DaemonSet or StatefulSet.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -r -l grace-period -d 'Period of time in seconds given to each pod to terminate gracefully. If negative, the default value specified in the pod will be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -l ignore-daemonsets -d 'Ignore DaemonSet-managed pods.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -r -l pod-selector -d 'Label selector to filter pods on the node'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -r -s l -l selector -d 'Selector (label query) to filter on'
+complete -c kubectl -f -n '__fish_seen_subcommand_from drain' -r -l timeout -d 'The length of time to wait before giving up, zero means infinite'
+
+# Completions for the "kubectl edit" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from edit' -r -s f -l filename -d 'Filename, directory, or URL to files to use to edit the resource'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l output-patch -d 'Output the patch if the resource is edited.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from edit' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from edit' -l windows-line-endings -d 'Defaults to the line ending native to your platform.'
+
+# Completions for the "kubectl exec" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from exec' -r -s c -l container -d 'Container name. If omitted, the first container in the pod will be chosen'
+complete -c kubectl -f -n '__fish_seen_subcommand_from exec' -s i -l stdin -d 'Pass stdin to the container'
+complete -c kubectl -f -n '__fish_seen_subcommand_from exec' -s t -l tty -d 'Stdin is a TTY'
+
+# Completions for the "kubectl explain" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from explain' -r -l api-version -d 'Get different explanations for particular API version'
+complete -c kubectl -f -n '__fish_seen_subcommand_from explain' -l recursive -d 'Print the fields of fields (Currently only 1 level deep)'
+
+# Completions for the "kubectl expose" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l cluster-ip -d 'ClusterIP to be assigned to the service. Leave empty to auto-allocate, or set to \'None\' to create a headless service.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l external-ip -d 'Additional external IP address (not managed by Kubernetes) to accept for the service. If this IP is routed to a node, the service can be accessed by this IP in addition to its generated service IP.'
+complete -c kubectl -n '__fish_seen_subcommand_from expose' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to expose a service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l generator -d 'The name of the API generator to use. There are 2 generators: \'service/v1\' and \'service/v2\'. The only difference between them is that service port in v1 is named \'default\', while it is left unnamed in v2. Default is \'service/v2\'.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -s l -l labels -d 'Labels to apply to the service created by this call.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l load-balancer-ip -d 'IP to assign to the LoadBalancer. If empty, an ephemeral IP will be created and used (cloud-provider specific).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l name -d 'The name for the newly created object.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l overrides -d 'An inline JSON override for the generated object. If this is non-empty, it is used to override the generated object. Requires that the object supply a valid apiVersion field.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l port -d 'The port that the service should serve on. Copied from the resource being exposed, if unspecified'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l protocol -d 'The network protocol for the service to be created. Default is \'TCP\'.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l selector -d 'A label selector to use for this service. Only equality-based selector requirements are supported. If empty (the default) infer the selector from the replication controller or replica set.)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l session-affinity -d 'If non-empty, set the session affinity for the service to this; legal values: \'None\', \'ClientIP\''
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l target-port -d 'Name or number for the port on the container that the service should direct traffic to. Optional.'
+complete -c kubectl -n '__fish_seen_subcommand_from expose' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from expose' -r -l type -d 'Type for this service: ClusterIP, NodePort, LoadBalancer, or ExternalName. Default is \'ClusterIP\'.'
+
+# Completions for the "kubectl get" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l all-namespaces -d 'If present, list the requested object(s) across all namespaces. Namespace in current context is ignored even if specified with --namespace.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -l chunk-size -d 'Return large lists in chunks rather than all at once. Pass 0 to disable. This flag is beta and may change in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l export -d 'If true, use \'export\' for the resources.  Exported resources are stripped of cluster-specific information.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -l field-selector -d 'Selector (field query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. --field-selector key1=value1,key2=value2). The server only supports a limited number of field queries per type.'
+complete -c kubectl -n '__fish_seen_subcommand_from get' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l ignore-not-found -d 'If the requested object does not exist the command will return exit code 0.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -s L -l label-columns -d 'Accepts a comma separated list of labels that are going to be presented as columns. Names are case-sensitive. You can also use multiple flag options like -L label1 -L label2...'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l no-headers -d 'When using the default or custom-column output format, don\'t print headers (default print headers).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -s o -l output -d 'Output format. One of: json|yaml|wide|name|custom-columns=...|custom-columns-file=...|go-template=...|go-template-file=...|jsonpath=...|jsonpath-file=... See custom columns [http://kubernetes.io/docs/user-guide/kubectl-overview/#custom-columns], golang template [http://golang.org/pkg/text/template/#pkg-overview] and jsonpath template [http://kubernetes.io/docs/user-guide/jsonpath].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -l raw -d 'Raw URI to request from the server.  Uses the transport specified by the kubeconfig file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l server-print -d 'If true, have the server return the appropriate table output. Supports extension APIs and CRDs.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l show-kind -d 'If present, list the resource type for the requested object(s).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l show-labels -d 'When printing, show all labels as the last column (default hide labels column)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -r -l sort-by -d 'If non-empty, sort list types using this field specification.  The field specification is expressed as a JSONPath expression (e.g. \'{.metadata.name}\'). The field in the API resource specified by this JSONPath expression must be an integer or a string.'
+complete -c kubectl -n '__fish_seen_subcommand_from get' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -s w -l watch -d 'After listing/getting the requested object, watch for changes. Uninitialized objects are excluded if no object name is provided.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from get' -l watch-only -d 'Watch for changes to the requested object(s), without listing/getting first.'
+
+# Completions for the "kubectl label" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -r -l field-selector -d 'Selector (field query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. --field-selector key1=value1,key2=value2). The server only supports a limited number of field queries per type.'
+complete -c kubectl -n '__fish_seen_subcommand_from label' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to update the labels'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l list -d 'If true, display the labels for a given resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l local -d 'If true, label will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l overwrite -d 'If true, allow labels to be overwritten, otherwise reject label updates that overwrite existing labels.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -r -l resource-version -d 'If non-empty, the labels update will only succeed if this is the current resource-version for the object. Only valid when specifying a single resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from label' -r -s l -l selector -d 'Selector (label query) to filter on, not including uninitialized ones, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2).'
+complete -c kubectl -n '__fish_seen_subcommand_from label' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl logs" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -l all-containers -d 'Get all containers\'s logs in the pod(s).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -l all-containers -d 'Get all containers\'s logs in the pod(s).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -s c -l container -d 'Print the logs of this container'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -s c -l container -d 'Print the logs of this container'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -s f -l follow -d 'Specify if the logs should be streamed.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -s f -l follow -d 'Specify if the logs should be streamed.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -l limit-bytes -d 'Maximum bytes of logs to return. Defaults to no limit.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -l limit-bytes -d 'Maximum bytes of logs to return. Defaults to no limit.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -s p -l previous -d 'If true, print the logs for the previous instance of the container in a pod if it exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -s p -l previous -d 'If true, print the logs for the previous instance of the container in a pod if it exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -s l -l selector -d 'Selector (label query) to filter on.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -s l -l selector -d 'Selector (label query) to filter on.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -l since -d 'Only return logs newer than a relative duration like 5s, 2m, or 3h. Defaults to all logs. Only one of since-time / since may be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -l since -d 'Only return logs newer than a relative duration like 5s, 2m, or 3h. Defaults to all logs. Only one of since-time / since may be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -l since-time -d 'Only return logs after a specific date (RFC3339). Defaults to all logs. Only one of since-time / since may be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -l since-time -d 'Only return logs after a specific date (RFC3339). Defaults to all logs. Only one of since-time / since may be used.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -r -l tail -d 'Lines of recent log file to display. Defaults to -1 with no selector, showing all log lines otherwise 10, if a selector is provided.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -r -l tail -d 'Lines of recent log file to display. Defaults to -1 with no selector, showing all log lines otherwise 10, if a selector is provided.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from logs' -l timestamps -d 'Include timestamps on each line in the log output'
+complete -c kubectl -f -n '__fish_seen_subcommand_from log' -l timestamps -d 'Include timestamps on each line in the log output'
+
+# Completions for the "kubectl patch" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from patch' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to update'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -l local -d 'If true, patch will operate on the content of the file, not the server-side resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -r -s p -l patch -d 'The patch to be applied to the resource JSON file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from patch' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from patch' -r -l type -d 'The type of patch being provided; one of [json merge strategic]'
+
+# Completions for the "kubectl plugin" command
+function __fish_kubectl_get_plugin_commands
+  echo list\t'list all visible plugin executables on a user\'s PATH'
+end
+
+function __fish_kubectl_get_plugin_commands_without_descriptions
+  __fish_kubectl_get_plugin_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command plugin; and not __fish_seen_subcommand_from (__fish_kubectl_get_plugin_commands_without_descriptions)" -a '(__fish_kubectl_get_plugin_commands)'
+
+# Completions for the "kubectl plugin list" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from plugin; and __fish_seen_subcommand_from list' -l name-only -d 'If true, display only the binary name of each plugin, rather than its full path'
+
+# Completions for the "kubectl port-forward" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from port-forward' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+
+# Completions for the "kubectl proxy" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l accept-hosts -d 'Regular expression for hosts that the proxy should accept.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l accept-paths -d 'Regular expression for paths that the proxy should accept.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l address -d 'The IP address on which to serve on.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l api-prefix -d 'Prefix to serve the proxied API under.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -l disable-filter -d 'If true, disable request filtering in the proxy. This is dangerous, and can leave you vulnerable to XSRF attacks, when used with an accessible port.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l keepalive -d 'keepalive specifies the keep-alive period for an active network connection. Set to 0 to disable keepalive.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -s p -l port -d 'The port on which to run the proxy. Set to 0 to pick a random port.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l reject-methods -d 'Regular expression for HTTP methods that the proxy should reject (example --reject-methods=\'POST,PUT,PATCH\'). '
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -l reject-paths -d 'Regular expression for paths that the proxy should reject. Paths specified here will be rejected even accepted by --accept-paths.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -s u -l unix-socket -d 'Unix socket on which to run the proxy.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -s w -l www -d 'Also serve static files from the given directory under the specified prefix.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from proxy' -r -s P -l www-prefix -d 'Prefix to serve static files under, if static file directory is specified.'
+
+# Completions for the "kubectl replace" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -l cascade -d 'If true, cascade the deletion of the resources managed by this resource (e.g. Pods created by a ReplicationController).  Default true.'
+complete -c kubectl -n '__fish_seen_subcommand_from replace' -r -s f -l filename -d 'to use to replace the resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -l force -d 'Only used when grace-period=0. If true, immediately remove resources from API and bypass graceful deletion. Note that immediate deletion of some resources may result in inconsistency or data loss and requires confirmation.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -r -l grace-period -d 'Period of time in seconds given to the resource to terminate gracefully. Ignored if negative. Set to 1 for immediate shutdown. Can only be set to 0 when --force is true (force deletion).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -n '__fish_seen_subcommand_from replace' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -r -l timeout -d 'The length of time to wait before giving up on a delete, zero means determine a timeout from the size of the object'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -l validate -d 'If true, use a schema to validate the input before sending it'
+complete -c kubectl -f -n '__fish_seen_subcommand_from replace' -l wait -d 'If true, wait for resources to be gone before returning. This waits for finalizers.'
+
+# Completions for the "kubectl rolling-update" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l container -d 'Container name which will have its image upgraded. Only relevant when --image is specified, ignored otherwise. Required when using --image on a multi-container pod'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l deployment-label-key -d 'The key to use to differentiate between two different controllers, default \'deployment\'.  Only relevant when --image is specified, ignored otherwise'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from rolling-update' -r -s f -l filename -d 'Filename or URL to file to use to create the new replication controller.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l image -d 'Image to use for upgrading the replication controller. Must be distinct from the existing image (either new image or new image tag).  Can not be used with --filename/-f'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l image-pull-policy -d 'Explicit policy for when to pull container images. Required when --image is same as existing image, ignored otherwise.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template-file|templatefile|template|go-template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l poll-interval -d 'Time delay between polling for replication controller status after the update. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -l rollback -d 'If true, this is a request to abort an existing rollout that is partially rolled out. It effectively reverses current and next and runs a rollout'
+complete -c kubectl -n '__fish_seen_subcommand_from rolling-update' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l timeout -d 'Max time to wait for a replication controller to update before giving up. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -r -l update-period -d 'Time to wait between updating pods. Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rolling-update' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl rollout" command
+function __fish_kubectl_get_rollout_commands
+  echo history\t'View rollout history'
+  echo pause\t'Mark the provided resource as paused'
+  echo resume\t'Resume a paused resource'
+  echo status\t'Show the status of the rollout'
+  echo undo\t'Undo a previous rollout'
+end
+
+function __fish_kubectl_get_rollout_commands_without_descriptions
+  __fish_kubectl_get_rollout_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command rollout; and not __fish_seen_subcommand_from (__fish_kubectl_get_rollout_commands_without_descriptions)" -a '(__fish_kubectl_get_rollout_commands)'
+
+# Completions for the "kubectl rollout history" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from history' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from history' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from history' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from history' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from history' -r -l revision -d 'See the details, including podTemplate of the revision specified'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from history' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl rollout pause" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from pause' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from pause' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from pause' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from pause' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from pause' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl rollout resume" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from resume' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from resume' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from resume' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from resume' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from resume' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl rollout status" command
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from status' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from status' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from status' -r -l revision -d 'Pin to a specific revision for showing its status. Defaults to 0 (last revision).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from status' -r -l timeout -d 'The length of time to wait before ending watch, zero means never. Any other values should contain a corresponding time unit (e.g. 1s, 2m, 3h).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from status' -s w -l watch -d 'Watch the status of the rollout until it\'s done.'
+
+# Completions for the "kubectl rollout undo" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from rollout; and __fish_seen_subcommand_from undo' -r -l to-revision -d 'The revision to rollback to. Default to 0 (last revision).'
+
+# Completions for the "kubectl run" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l attach -d 'If true, wait for the Pod to start running, and then attach to the Pod as if \'kubectl attach ...\' were called.  Default false, unless \'-i/--stdin\' is set, in which case the default is true. With \'--restart=Never\' the exit code of the container process is returned.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l cascade -d 'If true, cascade the deletion of the resources managed by this resource (e.g. Pods created by a ReplicationController).  Default true.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l command -d 'If true and extra arguments are present, use them as the \'command\' field in the container, rather than the \'args\' field which is the default.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l env -d 'Environment variables to set in the container'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l expose -d 'If true, a public, external service is created for the container(s) which are run'
+complete -c kubectl -n '__fish_seen_subcommand_from run' -r -s f -l filename -d 'to use to replace the resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l force -d 'Only used when grace-period=0. If true, immediately remove resources from API and bypass graceful deletion. Note that immediate deletion of some resources may result in inconsistency or data loss and requires confirmation.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l generator -d 'The name of the API generator to use, see http://kubernetes.io/docs/user-guide/kubectl-conventions/#generators for a list.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l grace-period -d 'Period of time in seconds given to the resource to terminate gracefully. Ignored if negative. Set to 1 for immediate shutdown. Can only be set to 0 when --force is true (force deletion).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l hostport -d 'The host port mapping for the container port. To demonstrate a single-machine container.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l image -d 'The image for the container to run.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l image-pull-policy -d 'The image pull policy for the container. If left empty, this value will not be specified by the client and defaulted by the server'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -s l -l labels -d 'Comma separated labels to apply to the pod(s). Will override previous values.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l leave-stdin-open -d 'If the pod is started in interactive mode or with stdin, leave stdin open after the first attach completes. By default, stdin will be closed after the first attach completes.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l limits -d 'The resource requirement limits for this container.  For example, \'cpu=200m,memory=512Mi\'.  Note that server side components may assign limits depending on the server configuration, such as limit ranges.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template|go-template-file|templatefile|template|jsonpath-file|jsonpath.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l overrides -d 'An inline JSON override for the generated object. If this is non-empty, it is used to override the generated object. Requires that the object supply a valid apiVersion field.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l port -d 'The port that this container exposes.  If --expose is true, this is also the port used by the service that is created.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l quiet -d 'If true, suppress prompt messages.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -s r -l replicas -d 'Number of replicas to create for this container. Default is 1.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l requests -d 'The resource requirement requests for this container.  For example, \'cpu=100m,memory=256Mi\'.  Note that server side components may assign requests depending on the server configuration, such as limit ranges.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l restart -d 'The restart policy for this Pod.  Legal values [Always, OnFailure, Never].  If set to \'Always\' a deployment is created, if set to \'OnFailure\' a job is created, if set to \'Never\', a regular pod is created. For the latter two --replicas must be 1.  Default \'Always\', for CronJobs `Never`.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l rm -d 'If true, delete resources created in this command for attached containers.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l schedule -d 'A schedule in the Cron format the job should be run with.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l service-generator -d 'The name of the generator to use for creating a service.  Only used if --expose is true'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l service-overrides -d 'An inline JSON override for the generated service object. If this is non-empty, it is used to override the generated object. Requires that the object supply a valid apiVersion field.  Only used if --expose is true.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l serviceaccount -d 'Service account to set in the pod spec'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -s i -l stdin -d 'Keep stdin open on the container(s) in the pod, even if nothing is attached.'
+complete -c kubectl -n '__fish_seen_subcommand_from run' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -r -l timeout -d 'The length of time to wait before giving up on a delete, zero means determine a timeout from the size of the object'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -s t -l tty -d 'Allocated a TTY for each container in the pod.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run' -l wait -d 'If true, wait for resources to be gone before returning. This waits for finalizers.'
+
+# Completions for the "kubectl run-container" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l attach -d 'If true, wait for the Pod to start running, and then attach to the Pod as if \'kubectl attach ...\' were called.  Default false, unless \'-i/--stdin\' is set, in which case the default is true. With \'--restart=Never\' the exit code of the container process is returned.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l cascade -d 'If true, cascade the deletion of the resources managed by this resource (e.g. Pods created by a ReplicationController).  Default true.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l command -d 'If true and extra arguments are present, use them as the \'command\' field in the container, rather than the \'args\' field which is the default.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l env -d 'Environment variables to set in the container'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l expose -d 'If true, a public, external service is created for the container(s) which are run'
+complete -c kubectl -n '__fish_seen_subcommand_from run-container' -r -s f -l filename -d 'to use to replace the resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l force -d 'Only used when grace-period=0. If true, immediately remove resources from API and bypass graceful deletion. Note that immediate deletion of some resources may result in inconsistency or data loss and requires confirmation.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l generator -d 'The name of the API generator to use, see http://kubernetes.io/docs/user-guide/kubectl-conventions/#generators for a list.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l grace-period -d 'Period of time in seconds given to the resource to terminate gracefully. Ignored if negative. Set to 1 for immediate shutdown. Can only be set to 0 when --force is true (force deletion).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l hostport -d 'The host port mapping for the container port. To demonstrate a single-machine container.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l image -d 'The image for the container to run.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l image-pull-policy -d 'The image pull policy for the container. If left empty, this value will not be specified by the client and defaulted by the server'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -s l -l labels -d 'Comma separated labels to apply to the pod(s). Will override previous values.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l leave-stdin-open -d 'If the pod is started in interactive mode or with stdin, leave stdin open after the first attach completes. By default, stdin will be closed after the first attach completes.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l limits -d 'The resource requirement limits for this container.  For example, \'cpu=200m,memory=512Mi\'.  Note that server side components may assign limits depending on the server configuration, such as limit ranges.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -s o -l output -d 'Output format. One of: json|yaml|name|templatefile|template|go-template|go-template-file|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l overrides -d 'An inline JSON override for the generated object. If this is non-empty, it is used to override the generated object. Requires that the object supply a valid apiVersion field.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l pod-running-timeout -d 'The length of time (like 5s, 2m, or 3h, higher than zero) to wait until at least one pod is running'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l port -d 'The port that this container exposes.  If --expose is true, this is also the port used by the service that is created.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l quiet -d 'If true, suppress prompt messages.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -s r -l replicas -d 'Number of replicas to create for this container. Default is 1.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l requests -d 'The resource requirement requests for this container.  For example, \'cpu=100m,memory=256Mi\'.  Note that server side components may assign requests depending on the server configuration, such as limit ranges.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l restart -d 'The restart policy for this Pod.  Legal values [Always, OnFailure, Never].  If set to \'Always\' a deployment is created, if set to \'OnFailure\' a job is created, if set to \'Never\', a regular pod is created. For the latter two --replicas must be 1.  Default \'Always\', for CronJobs `Never`.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l rm -d 'If true, delete resources created in this command for attached containers.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l save-config -d 'If true, the configuration of current object will be saved in its annotation. Otherwise, the annotation will be unchanged. This flag is useful when you want to perform kubectl apply on this object in the future.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l schedule -d 'A schedule in the Cron format the job should be run with.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l service-generator -d 'The name of the generator to use for creating a service.  Only used if --expose is true'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l service-overrides -d 'An inline JSON override for the generated service object. If this is non-empty, it is used to override the generated object. Requires that the object supply a valid apiVersion field.  Only used if --expose is true.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l serviceaccount -d 'Service account to set in the pod spec'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -s i -l stdin -d 'Keep stdin open on the container(s) in the pod, even if nothing is attached.'
+complete -c kubectl -n '__fish_seen_subcommand_from run-container' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -r -l timeout -d 'The length of time to wait before giving up on a delete, zero means determine a timeout from the size of the object'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -s t -l tty -d 'Allocated a TTY for each container in the pod.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from run-container' -l wait -d 'If true, wait for resources to be gone before returning. This waits for finalizers.'
+
+# Completions for the "kubectl scale" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -l all -d 'Select all resources in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -r -l current-replicas -d 'Precondition for current size. Requires that the current size of the resource match this value in order to scale.'
+complete -c kubectl -n '__fish_seen_subcommand_from scale' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to set a new size'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template|go-template-file|templatefile|template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -r -l replicas -d 'The new desired number of replicas. Required.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -r -l resource-version -d 'Precondition for resource version. Requires that the current resource version match this value in order to scale.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -n '__fish_seen_subcommand_from scale' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from scale' -r -l timeout -d 'The length of time to wait before giving up on a scale operation, zero means don\'t wait. Any other values should contain a corresponding time unit (e.g. 1s, 2m, 3h).'
+
+# Completions for the "kubectl set" command
+function __fish_kubectl_get_set_commands
+  echo env\t'Update environment variables on a pod template'
+  echo image\t'Update image of a pod template'
+  echo resources\t'Update resource requests/limits on objects with pod templates'
+  echo selector\t'Set the selector on a resource'
+  echo serviceaccount\t'Update ServiceAccount of a resource'
+  echo sa\t'Update ServiceAccount of a resource'
+  echo subject\t'Update User, Group or ServiceAccount in a RoleBinding/ClusterRoleBinding'
+end
+
+function __fish_kubectl_get_set_commands_without_descriptions
+  __fish_kubectl_get_set_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command set; and not __fish_seen_subcommand_from (__fish_kubectl_get_set_commands_without_descriptions)" -a '(__fish_kubectl_get_set_commands)'
+
+# Completions for the "kubectl set env" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l all -d 'If true, select all resources in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -s c -l containers -d 'The names of containers in the selected pod templates to change - may use wildcards'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -s e -l env -d 'Specify a key-value pair for an environment variable to set into each container.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -s f -l filename -d 'Filename, directory, or URL to files the resource to update the env'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -l from -d 'The name of a resource from which to inject environment variables'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -l keys -d 'Comma-separated list of keys to import from specified resource'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l list -d 'If true, display the environment and any changes in the standard format. this flag will removed when we have kubectl view env.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l local -d 'If true, set env will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l overwrite -d 'If true, allow environment to be overwritten, otherwise reject updates that overwrite existing environment.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -l prefix -d 'Prefix to append to variable names'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -l resolve -d 'If true, show secret or configmap references when listing variables'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -s l -l selector -d 'Selector (label query) to filter on'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from env' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl set image" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -l local -d 'If true, set image will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -r -s l -l selector -d 'Selector (label query) to filter on, not including uninitialized ones, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from image' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl set resources" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -s c -l containers -d 'The names of containers in the selected pod templates to change, all containers are selected by default - may use wildcards'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -l limits -d 'The resource requirement requests for this container.  For example, \'cpu=100m,memory=256Mi\'.  Note that server side components may assign requests depending on the server configuration, such as limit ranges.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -l local -d 'If true, set resources will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -l requests -d 'The resource requirement requests for this container.  For example, \'cpu=100m,memory=256Mi\'.  Note that server side components may assign requests depending on the server configuration, such as limit ranges.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -s l -l selector -d 'Selector (label query) to filter on, not including uninitialized ones,supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from resources' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl set selector" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -l all -d 'Select all resources in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -r -s f -l filename -d 'identifying the resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -l local -d 'If true, annotation will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -r -l resource-version -d 'If non-empty, the selectors update will only succeed if this is the current resource-version for the object. Only valid when specifying a single resource.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from selector' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl set serviceaccount" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -r -s f -l filename -d 'Filename, directory, or URL to files identifying the resource to get from a server.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -l local -d 'If true, set serviceaccount will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -l local -d 'If true, set serviceaccount will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -l record -d 'Record current kubectl command in the resource annotation. If set to false, do not record the command. If set to true, record the command. If not set, default to updating the existing annotation value only if one already exists.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from serviceaccount' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from sa' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl set subject" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -l all -d 'Select all resources, including uninitialized ones, in the namespace of the specified resource types'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -r -s f -l filename -d 'Filename, directory, or URL to files the resource to update the subjects'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -r -l group -d 'Groups to bind to the role'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -l include-uninitialized -d 'If true, the kubectl command applies to uninitialized objects. If explicitly set to false, this flag overrides other flags that make the kubectl commands apply to uninitialized objects, e.g., "--all". Objects with empty metadata.initializers are regarded as initialized.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -l local -d 'If true, set subject will NOT contact api-server but run locally.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -r -s l -l selector -d 'Selector (label query) to filter on, not including uninitialized ones, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -r -l serviceaccount -d 'Service accounts to bind to the role'
+complete -c kubectl -n '__fish_seen_subcommand_from set; and __fish_seen_subcommand_from subject' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+
+# Completions for the "kubectl taint" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from taint' -l all -d 'Select all nodes in the cluster'
+complete -c kubectl -f -n '__fish_seen_subcommand_from taint' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from taint' -r -s o -l output -d 'Output format. One of: json|yaml|name|go-template-file|templatefile|template|go-template|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from taint' -l overwrite -d 'If true, allow taints to be overwritten, otherwise reject taint updates that overwrite existing taints.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from taint' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -n '__fish_seen_subcommand_from taint' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from taint' -l validate -d 'If true, use a schema to validate the input before sending it'
+
+# Completions for the "kubectl top" command
+function __fish_kubectl_get_top_commands
+  echo node\t'Display Resource (CPU/Memory/Storage) usage of nodes'
+  echo nodes\t'Display Resource (CPU/Memory/Storage) usage of nodes'
+  echo no\t'Display Resource (CPU/Memory/Storage) usage of nodes'
+  echo pod\t'Display Resource (CPU/Memory/Storage) usage of pods'
+  echo pods\t'Display Resource (CPU/Memory/Storage) usage of pods'
+  echo po\t'Display Resource (CPU/Memory/Storage) usage of pods'
+end
+
+function __fish_kubectl_get_top_commands_without_descriptions
+  __fish_kubectl_get_top_commands | string replace -r '\t.*$' ''
+end
+
+complete -c kubectl -f -n "__fish_kubectl_using_command top; and not __fish_seen_subcommand_from (__fish_kubectl_get_top_commands_without_descriptions)" -a '(__fish_kubectl_get_top_commands)'
+
+# Completions for the "kubectl top node" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from node' -r -l heapster-namespace -d 'Namespace Heapster service is located in'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from nodes' -r -l heapster-namespace -d 'Namespace Heapster service is located in'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no' -r -l heapster-namespace -d 'Namespace Heapster service is located in'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from node' -r -l heapster-port -d 'Port name in service to use'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from nodes' -r -l heapster-port -d 'Port name in service to use'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no' -r -l heapster-port -d 'Port name in service to use'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from node' -r -l heapster-scheme -d 'Scheme (http or https) to connect to Heapster as'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from nodes' -r -l heapster-scheme -d 'Scheme (http or https) to connect to Heapster as'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no' -r -l heapster-scheme -d 'Scheme (http or https) to connect to Heapster as'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from node' -r -l heapster-service -d 'Name of Heapster service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from nodes' -r -l heapster-service -d 'Name of Heapster service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no' -r -l heapster-service -d 'Name of Heapster service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from node' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from nodes' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+
+# Completions for the "kubectl top pod" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -l all-namespaces -d 'If present, list the requested object(s) across all namespaces. Namespace in current context is ignored even if specified with --namespace.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -l all-namespaces -d 'If present, list the requested object(s) across all namespaces. Namespace in current context is ignored even if specified with --namespace.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -l all-namespaces -d 'If present, list the requested object(s) across all namespaces. Namespace in current context is ignored even if specified with --namespace.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -l containers -d 'If present, print usage of containers within a pod.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -l containers -d 'If present, print usage of containers within a pod.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -l containers -d 'If present, print usage of containers within a pod.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -r -l heapster-namespace -d 'Namespace Heapster service is located in'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -r -l heapster-namespace -d 'Namespace Heapster service is located in'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -r -l heapster-namespace -d 'Namespace Heapster service is located in'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -r -l heapster-port -d 'Port name in service to use'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -r -l heapster-port -d 'Port name in service to use'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -r -l heapster-port -d 'Port name in service to use'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -r -l heapster-scheme -d 'Scheme (http or https) to connect to Heapster as'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -r -l heapster-scheme -d 'Scheme (http or https) to connect to Heapster as'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -r -l heapster-scheme -d 'Scheme (http or https) to connect to Heapster as'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -r -l heapster-service -d 'Name of Heapster service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -r -l heapster-service -d 'Name of Heapster service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -r -l heapster-service -d 'Name of Heapster service'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pod' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from pods' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -f -n '__fish_seen_subcommand_from top; and __fish_seen_subcommand_from po' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+
+# Completions for the "kubectl uncordon" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from uncordon' -l dry-run -d 'If true, only print the object that would be sent, without sending it.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from uncordon' -r -s l -l selector -d 'Selector (label query) to filter on'
+
+# Completions for the "kubectl version" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from version' -l client -d 'Client version only (no server required).'
+complete -c kubectl -f -n '__fish_seen_subcommand_from version' -r -s o -l output -d 'One of \'yaml\' or \'json\'.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from version' -l short -d 'Print just the version number.'
+
+# Completions for the "kubectl wait" command
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -l all-namespaces -d 'If present, list the requested object(s) across all namespaces. Namespace in current context is ignored even if specified with --namespace.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -l allow-missing-template-keys -d 'If true, ignore any errors in templates when a field or map key is missing in the template. Only applies to golang and jsonpath output formats.'
+complete -c kubectl -n '__fish_seen_subcommand_from wait' -r -s f -l filename -d 'identifying the resource.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -r -l for -d 'The condition to wait on: [delete|condition=condition-name].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -r -s o -l output -d 'Output format. One of: json|yaml|name|template|go-template|go-template-file|templatefile|jsonpath|jsonpath-file.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -s R -l recursive -d 'Process the directory used in -f, --filename recursively. Useful when you want to manage related manifests organized within the same directory.'
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -r -s l -l selector -d 'Selector (label query) to filter on, supports \'=\', \'==\', and \'!=\'.(e.g. -l key1=value1,key2=value2)'
+complete -c kubectl -n '__fish_seen_subcommand_from wait' -r -l template -d 'Template string or path to template file to use when -o=go-template, -o=go-template-file. The template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].'
+complete -c kubectl -f -n '__fish_seen_subcommand_from wait' -r -l timeout -d 'The length of time to wait before giving up.  Zero means check once and don\'t wait, negative means wait for a week.'
