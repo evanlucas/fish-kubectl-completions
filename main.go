@@ -72,12 +72,12 @@ set __fish_kubectl_resources        \
 set __fish_kubectl_crds
 
 function __fish_kubectl_get_crds
-	if not set -q __fish_kubectl_crds
-		set __fish_kubectl_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}')
-	end
-	for i in $set __fish_kubectl_crds
-		echo $i
-	end
+  if not set -q __fish_kubectl_crds
+    set __fish_kubectl_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}')
+  end
+  for i in $__fish_kubectl_crds
+    echo $i
+  end
 end
 
 function __fish_kubectl_seen_subcommand_from_regex
@@ -214,8 +214,8 @@ function __fish_kubectl_print_resource -d 'Print a list of resources' -a resourc
 end
 
 function __fish_kubectl_get_config -a type
-	set -l template "{{ range .$type }}"'{{ .name }}{{"\n"}}{{ end }}'
-	__fish_kubectl config view -o template --template="$template"
+  set -l template "{{ range .$type }}"'{{ .name }}{{"\n"}}{{ end }}'
+  __fish_kubectl config view -o template --template="$template"
 end
 
 function __fish_kubectl_get_rollout_resources
@@ -268,7 +268,7 @@ complete -c kubectl -f -n "__fish_seen_subcommand_from top; and __fish_seen_subc
 complete -c kubectl -f -n "__fish_seen_subcommand_from top; and __fish_seen_subcommand_from no node nodes" -a '(__fish_kubectl_print_resource nodes)' -d 'Node'
 
 for subcmd in cordon uncordon drain taint
-	complete -c kubectl -f -n "__fish_seen_subcommand_from $subcmd" -a '(__fish_kubectl_print_resource nodes)' -d 'Node'
+  complete -c kubectl -f -n "__fish_seen_subcommand_from $subcmd" -a '(__fish_kubectl_print_resource nodes)' -d 'Node'
 end
 
 set -l __fish_kubectl_config_complete_contexts \
@@ -290,10 +290,6 @@ complete -c kubectl -f -n "__fish_seen_subcommand_from rollout; and __fish_seen_
 )
 
 func main() {
-	// root := k8scmd.NewKubectlCommand(os.Stdin, os.Stdout, os.Stderr)
-	// root.NonInheritedFlags().VisitAll(func(flag *pflag.Flag) {
-	// 	fmt.Printf("%+v\n", flag)
-	// })
 	err := GenFishCompletion(os.Stdout)
 	if err != nil {
 		fmt.Println(err)
