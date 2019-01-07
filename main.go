@@ -224,11 +224,11 @@ function __fish_kubectl_print_resource -d 'Print a list of resources' -a resourc
   set -l args
   if set -l ns_flags (__fish_kubectl_get_ns_flags | string split " ")
     for ns in $ns_flags
-      set -a args $ns
+      set args $args $ns
     end
   end
 
-  set -a args get "$resource" -o name
+  set args $args get "$resource" -o name
   __fish_kubectl $args | string replace -r '(.*)/' ''
 end
 
@@ -241,7 +241,7 @@ function __fish_kubectl_get_rollout_resources
   set -l args
   if set -l ns_flags (__fish_kubectl_get_ns_flags | string split " ")
     for ns in $ns_flags
-      set -a args $ns
+      set args $args $ns
     end
   end
 
