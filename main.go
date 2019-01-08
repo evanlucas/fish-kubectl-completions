@@ -21,7 +21,6 @@ set __fish_kubectl_subresource_commands get describe delete edit label explain
 set __fish_kubectl_commands %s
 
 function __fish_kubectl
-	echo "kubectl $argv" >> ~/Desktop/kubectl.log
   command kubectl $__fish_kubectl_timeout $argv
 end
 
