@@ -49,7 +49,15 @@ set __fish_kubectl_commands alpha \
   wait
 
 function __fish_kubectl
-  command kubectl $__fish_kubectl_timeout $argv
+  set -l context_args
+
+  if set -l context_flags (__fish_kubectl_get_context_flags | string split " ")
+    for c in $context_flags
+      set context_args $context_args $c
+    end
+  end
+
+  command kubectl $__fish_kubectl_timeout $context_args $argv
 end
 
 function __fish_kubectl_get_commands
@@ -252,23 +260,26 @@ function __fish_kubectl_get_ns_flags
   return 1
 end
 
-function __fish_kubectl_get_context -d 'Gets the context for the current command'
+function __fish_kubectl_get_context_flags
   set -l cmd (commandline -opc)
   if [ (count $cmd) -eq 0 ]
-    echo ""
-    return 0
-  else
-    set -l foundContext 0
-    for c in $cmd
-      test $foundContext -eq 1
-      and echo "$c"
-      and return 0
-      if contains -- $c "--context"
-        set foundContext 1
-      end
-    end
     return 1
   end
+
+  set -l foundContext 0
+
+  for c in $cmd
+    test $foundContext -eq 1
+    set -l out "--context" "$c"
+    and echo $out
+    and return 0
+
+    if contains -- $c "--context"
+      set foundContext 1
+    end
+  end
+
+  return 1
 end
 
 function __fish_kubectl_print_resource_types
