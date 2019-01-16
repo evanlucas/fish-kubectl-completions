@@ -274,7 +274,11 @@ function __fish_kubectl_get_context_flags
     and echo $out
     and return 0
 
-    if contains -- $c "--context"
+    if string match -q -r -- "--context=" $c
+      set -l out (string split -- "=" $c | string join " ")
+      and echo $out
+      and return 0
+    else if contains -- $c "--context"
       set foundContext 1
     end
   end
