@@ -6,8 +6,12 @@
 $ mkdir -p ~/.config/fish/completions
 $ cd ~/.config/fish
 $ git clone https://github.com/evanlucas/fish-kubectl-completions
-$ ln -s ../fish-kubectl-completions/kubectl.fish completions/
+$ ln -s ../fish-kubectl-completions/completions/kubectl.fish completions/
 ```
+
+### Install using [Fisher](https://github.com/jorgebucaran/fisher)
+
+`fisher add evanlucas/fish-kubectl-completions`
 
 ## Building
 
@@ -15,7 +19,7 @@ This was tested using go 1.11.1 on macOS.
 
 ```console
 $ go build
-$ ./kcfishgen > kubectl.fish
+$ ./kcfishgen > completions/kubectl.fish
 ```
 
 ## Environment Variables
