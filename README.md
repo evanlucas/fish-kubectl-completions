@@ -18,8 +18,7 @@ $ ln -s ../fish-kubectl-completions/completions/kubectl.fish completions/
 This was tested using go 1.11.1 on macOS.
 
 ```console
-$ go build
-$ ./kcfishgen > completions/kubectl.fish
+$ make build
 ```
 
 ## Environment Variables
@@ -31,6 +30,12 @@ It defaults to `5s`.
 
 > Non-zero values should contain a corresponding time unit (e.g. 1s, 2m, 3h).
 > A value of zero means don't timeout requests.
+
+### `FISH_KUBECTL_COMPLETION_COMPLETE_CRDS`
+
+This can be used to prevent completing CRDs. Some users may have limited access
+to resources.
+It defaults to `1`. To disable, set to anything other than `1`.
 
 ## Author
 
