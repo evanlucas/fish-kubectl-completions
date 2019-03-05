@@ -15,6 +15,7 @@ import (
 const (
 	fishCompletionFunc = `#
 set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
+set -q FISH_KUBECTL_COMPLETION_COMPLETE_CRDS; or set FISH_KUBECTL_COMPLETION_COMPLETE_CRDS 1
 set __fish_kubectl_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
 set __fish_kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
 set __fish_kubectl_subresource_commands get describe delete edit label explain
@@ -186,11 +187,13 @@ function __fish_kubectl_print_resource_types
     echo $r
   end
 
-  set -l crds (__fish_kubectl_get_crds)
+	if test $FISH_KUBECTL_COMPLETION_COMPLETE_CRDS -eq 1
+		set -l crds (__fish_kubectl_get_crds)
 
-  for r in $crds
-    echo $r
-  end
+		for r in $crds
+			echo $r
+		end
+	end
 end
 
 function __fish_kubectl_print_current_resources -d 'Prints current resources'
@@ -278,7 +281,9 @@ for subcmd in $__fish_kubectl_subresource_commands
     complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from $resource" -a "(__fish_kubectl_print_resource $resource)" -d "$resource"
   end
 
-  complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
+	if test $FISH_KUBECTL_COMPLETION_COMPLETE_CRDS -eq 1
+		complete -c kubectl -f -n "__fish_kubectl_using_command $subcmd; and __fish_seen_subcommand_from (__fish_kubectl_get_crds)" -a '(__fish_kubectl_print_current_resources)' -d 'CRD'
+	end
 end
 
 complete -c kubectl -f -n "__fish_seen_subcommand_from log logs exec port-forward" -a '(__fish_kubectl_print_resource pods)' -d 'Pod'
