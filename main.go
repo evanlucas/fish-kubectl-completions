@@ -22,7 +22,15 @@ set __fish_kubectl_subresource_commands get describe delete edit label explain
 set __fish_kubectl_commands %s
 
 function __fish_kubectl
-  command kubectl $__fish_kubectl_timeout $argv
+	set -l context_args
+
+	if set -l context_flags (__fish_kubectl_get_context_flags | string split " ")
+		for c in $context_flags
+			set context_args $context_args $c
+		end
+	end
+
+  command kubectl $__fish_kubectl_timeout $context_args $argv
 end
 
 function __fish_kubectl_get_commands
@@ -69,8 +77,38 @@ set __fish_kubectl_resources        \
   statefulsets sts                  \
   storageclass storageclasses sc
 
+set __fish_kubectl_cached_crds ""
+set __fish_kubectl_last_crd_fetch ""
+
+function __fish_kubectl_actually_get_crds
+  set __fish_kubectl_cached_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}')
+  set __fish_kubectl_last_crd_fetch (__fish_kubectl_get_current_time)
+	for i in $__fish_kubectl_cached_crds
+		echo $i
+	end
+end
+
+function __fish_kubectl_get_current_time
+  date +'%%s'
+end
+
 function __fish_kubectl_get_crds
-  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{end}'
+  if test -z "$__fish_kubectl_last_crd_fetch"; or test -z "$__fish_kubectl_cached_crds"
+    __fish_kubectl_actually_get_crds
+    return 0
+  end
+
+  set -l ct (__fish_kubectl_get_current_time)
+	set -l duration (math $ct-$__fish_kubectl_last_crd_fetch)
+	# Only fetch crds if we have not fetched them within the past 30 seconds.
+  if test "$duration" -gt 30
+    __fish_kubectl_actually_get_crds
+    return 0
+  end
+
+  for i in $__fish_kubectl_cached_crds
+		echo $i
+	end
 end
 
 function __fish_kubectl_seen_subcommand_from_regex
@@ -153,6 +191,32 @@ function __fish_kubectl_print_matching_resources
   for i in $resources
     echo "$prefix/$i"
   end
+end
+
+function __fish_kubectl_get_context_flags
+	set -l cmd (commandline -opc)
+	if [ (count $cmd) -eq 0 ]
+		return 1
+	end
+
+	set -l foundContext 0
+
+	for c in $cmd
+		test $foundContext -eq 1
+		set -l out "--context" "$c"
+		and echo $out
+		and return 0
+
+		if string match -q -r -- "--context=" "$c"
+			set -l out (string split -- "=" "$c" | string join " ")
+			and echo $out
+			and return 0
+		else if contains -- "$c" "--context"
+			set foundContext 1
+		end
+	end
+
+	return 1
 end
 
 function __fish_kubectl_get_ns_flags
@@ -463,16 +527,17 @@ func buildParentPath(name string, cmd *cobra.Command) string {
 }
 
 func buildParentCheck(name string, cmd *cobra.Command) string {
-	s := []string{fmt.Sprintf("__fish_seen_subcommand_from %s", name)}
+	s := []string{name}
 	cmd = cmd.Parent()
 
 	for cmd.HasParent() {
-		str := fmt.Sprintf("__fish_seen_subcommand_from %s", cmd.Name())
+		str := cmd.Name()
 		s = append([]string{str}, s...)
 		cmd = cmd.Parent()
 	}
 
-	return strings.Join(s, "; and ")
+	out := append([]string{"__fish_seen_subcommand_from"}, s...)
+	return strings.Join(out, " ")
 }
 
 func completeCommand(buf *bytes.Buffer, cmd *cobra.Command) {
