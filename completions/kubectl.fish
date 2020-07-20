@@ -185,7 +185,7 @@ function __fish_kubectl_seen_subcommand_from_regex
   set -e cmd[1]
   for i in $cmd
     for r in $argv
-      if string match -r $r $i
+      if string match -r -- $r $i
         return 0
       end
     end
@@ -239,11 +239,11 @@ end
 
 function __fish_kubectl_has_partial_resource_match
   set -l last (commandline -opt)
-  if not set -l matches (string match "(.*)/" $last)
+  if not set -l matches (string match -- "(.*)/" $last)
     return
   end
 
-  if string match -q "(.*)/" $last
+  if string match -q -- "(.*)/" $last
     return 0
   end
 
@@ -252,7 +252,7 @@ end
 
 function __fish_kubectl_print_matching_resources
   set -l last (commandline -opt)
-  if not set -l matches (string match -r "(.*)/" $last)
+  if not set -l matches (string match -r -- "(.*)/" $last)
     return
   end
   set -l prefix $matches[2]
