@@ -81,7 +81,7 @@ set __fish_kubectl_cached_crds ""
 set __fish_kubectl_last_crd_fetch ""
 
 function __fish_kubectl_actually_get_crds
-  if test (kubectl get crd --no-headers=true 2>/dev/null | wc -l) -eq 0
+  if test (__fish_kubectl get crd --no-headers=true 2>/dev/null | wc -l) -eq 0
     return
   end
   set __fish_kubectl_cached_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{range .spec.names.shortNames[]}{@}{"\n"}{end}{end}')
@@ -298,7 +298,7 @@ function __fish_kubectl_print_resource -d 'Print a list of resources' -a resourc
   end
 
   set args $args get "$resource"
-  __fish_kubectl $args --no-headers | awk '{print $1}' | string replace -r '(.*)/' ''
+  __fish_kubectl $args --no-headers 2>/dev/null | awk '{print $1}' | string replace -r '(.*)/' ''
 end
 
 function __fish_kubectl_get_config -a type
