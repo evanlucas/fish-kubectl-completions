@@ -81,10 +81,7 @@ set __fish_kubectl_cached_crds ""
 set __fish_kubectl_last_crd_fetch ""
 
 function __fish_kubectl_actually_get_crds
-  if test (__fish_kubectl get crd --no-headers=true 2>/dev/null | wc -l) -eq 0
-    return
-  end
-  set __fish_kubectl_cached_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{range .spec.names.shortNames[]}{@}{"\n"}{end}{end}')
+  set __fish_kubectl_cached_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{range .spec.names.shortNames[]}{@}{"\n"}{end}{end}' 2>/dev/null)
   set __fish_kubectl_last_crd_fetch (__fish_kubectl_get_current_time)
 	for i in $__fish_kubectl_cached_crds
 		echo $i
@@ -316,9 +313,9 @@ function __fish_kubectl_get_rollout_resources
 
   set -l template '{range .items[*]}{.metadata.name}{"\n"}{end}'
 
-  set -l deploys (__fish_kubectl $args get deploy -o jsonpath="$template")
-  set -l daemonsets (__fish_kubectl $args get ds -o jsonpath="$template")
-  set -l sts (__fish_kubectl $args get sts -o jsonpath="$template")
+  set -l deploys (__fish_kubectl $args get deploy -o jsonpath="$template" 2>/dev/null)
+  set -l daemonsets (__fish_kubectl $args get ds -o jsonpath="$template" 2>/dev/null)
+  set -l sts (__fish_kubectl $args get sts -o jsonpath="$template" 2>/dev/null)
 
   for i in $deploys
     echo "deploy/$i"
