@@ -11,7 +11,7 @@ $ ln -s ../fish-kubectl-completions/completions/kubectl.fish completions/
 
 ### Install using [Fisher](https://github.com/jorgebucaran/fisher)
 
-`fisher add evanlucas/fish-kubectl-completions`
+`fisher install evanlucas/fish-kubectl-completions`
 
 ## Building
 
