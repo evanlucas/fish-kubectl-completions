@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	k8scmd "k8s.io/kubernetes/pkg/kubectl/cmd"
+	k8scmd "k8s.io/kubectl/pkg/cmd"
 )
 
 const (
