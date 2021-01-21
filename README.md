@@ -15,7 +15,7 @@ $ ln -s ../fish-kubectl-completions/completions/kubectl.fish completions/
 
 ## Building
 
-This was tested using go 1.11.1 on macOS.
+This was tested using go 1.15.7 on macOS 11.1 "Big Sur".
 
 ```console
 $ make build
