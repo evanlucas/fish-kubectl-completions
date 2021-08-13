@@ -57,7 +57,15 @@ function __fish_kubectl
 		end
 	end
 
-  command kubectl $__fish_kubectl_timeout $context_args $argv
+	set -l kubeconfig_args
+
+	if set -l kubeconfig_args (__fish_kubectl_get_kubeconfig_flags | string split " ")
+		for c in $kubeconfig_args
+			set kubeconfig_args $kubeconfig_args $c
+		end
+	end
+
+  command kubectl $__fish_kubectl_timeout $context_args $kubeconfig_args $argv
 end
 
 function __fish_kubectl_get_commands
@@ -282,6 +290,32 @@ function __fish_kubectl_get_context_flags
 			and return 0
 		else if contains -- "$c" "--context"
 			set foundContext 1
+		end
+	end
+
+	return 1
+end
+
+function __fish_kubectl_get_kubeconfig_flags
+	set -l cmd (commandline -opc)
+	if [ (count $cmd) -eq 0 ]
+		return 1
+	end
+
+	set -l foundKubeconfig 0
+
+	for c in $cmd
+		test $foundKubeconfig -eq 1
+		set -l out "--kubeconfig" "$c"
+		and echo $out
+		and return 0
+
+		if string match -q -r -- "--kubeconfig=" "$c"
+			set -l out (string split -- "=" "$c" | string join " ")
+			and echo $out
+			and return 0
+		else if contains -- "$c" "--kubeconfig"
+			set foundKubeconfig 1
 		end
 	end
 
