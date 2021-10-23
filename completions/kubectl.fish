@@ -1,6 +1,7 @@
 #
 set -q FISH_KUBECTL_COMPLETION_TIMEOUT; or set FISH_KUBECTL_COMPLETION_TIMEOUT 5s
 set -q FISH_KUBECTL_COMPLETION_COMPLETE_CRDS; or set FISH_KUBECTL_COMPLETION_COMPLETE_CRDS 1
+set -q FISH_KUBECTL_COMPLETION_CRD_CACHE_TTL; or set FISH_KUBECTL_COMPLETION_CRD_CACHE_TTL 30
 set __fish_kubectl_timeout "--request-timeout=$FISH_KUBECTL_COMPLETION_TIMEOUT"
 set __fish_kubectl_all_namespaces_flags "--all-namespaces" "--all-namespaces=true"
 set __fish_kubectl_subresource_commands get describe delete edit label explain
@@ -154,38 +155,44 @@ set __fish_kubectl_resources        \
   statefulsets sts                  \
   storageclass storageclasses sc
 
-set __fish_kubectl_cached_crds ""
-set __fish_kubectl_last_crd_fetch ""
+set -q XDG_CACHE_HOME
+  and set __fish_kubectl_cache_dir "$XDG_CACHE_HOME/fish-kubectl-completions"
+  or set __fish_kubectl_cache_dir "$HOME/.cache/fish-kubectl-completions"
 
-function __fish_kubectl_actually_get_crds
-  set __fish_kubectl_cached_crds (__fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{range .spec.names.shortNames[]}{@}{"\n"}{end}{end}' 2>/dev/null)
-  set __fish_kubectl_last_crd_fetch (__fish_kubectl_get_current_time)
-	for i in $__fish_kubectl_cached_crds
-		echo $i
-	end
+set __fish_kubectl_crd_cache_path $__fish_kubectl_cache_dir/crd
+
+function __fish_kubectl_crds_cached
+  if [ ! -f $__fish_kubectl_crd_cache_path ]
+      return 1
+  end
+
+  set -l duration (math (date +%s)-(stat -c %Y $__fish_kubectl_crd_cache_path))
+
+	# Discard the cached response if it's older than the cache TTL
+  if test $duration -gt $FISH_KUBECTL_COMPLETION_CRD_CACHE_TTL
+    return 1
+  end
 end
 
-function __fish_kubectl_get_current_time
-  date +'%s'
+function __fish_kubectl_cache_crds
+  set -l tmp (mktemp)
+  __fish_kubectl get crd -o jsonpath='{range .items[*]}{.spec.names.plural}{"\n"}{.spec.names.singular}{"\n"}{range .spec.names.shortNames[]}{@}{"\n"}{end}{end}' >$tmp 2>/dev/null
+
+  if [ $status -ne 0 ]
+    rm $tmp
+    return 1
+  end
+
+  mkdir -p $__fish_kubectl_cache_dir
+  mv $tmp $__fish_kubectl_crd_cache_path
 end
 
 function __fish_kubectl_get_crds
-  if test -z "$__fish_kubectl_last_crd_fetch"; or test -z "$__fish_kubectl_cached_crds"
-    __fish_kubectl_actually_get_crds
-    return 0
+  if not __fish_kubectl_crds_cached
+    __fish_kubectl_cache_crds || return 1
   end
 
-  set -l ct (__fish_kubectl_get_current_time)
-	set -l duration (math $ct-$__fish_kubectl_last_crd_fetch)
-	# Only fetch crds if we have not fetched them within the past 30 seconds.
-  if test "$duration" -gt 30
-    __fish_kubectl_actually_get_crds
-    return 0
-  end
-
-  for i in $__fish_kubectl_cached_crds
-		echo $i
-	end
+  cat $__fish_kubectl_crd_cache_path
 end
 
 function __fish_kubectl_seen_subcommand_from_regex
