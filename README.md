@@ -2,23 +2,25 @@
 
 ## Install
 
-```fish
-$ mkdir -p ~/.config/fish/completions
-$ cd ~/.config/fish
-$ git clone https://github.com/evanlucas/fish-kubectl-completions
-$ ln -s ../fish-kubectl-completions/completions/kubectl.fish completions/
+```
+mkdir -p ~/.config/fish/completions
+cd ~/.config/fish
+git clone https://github.com/evanlucas/fish-kubectl-completions
+ln -s ../fish-kubectl-completions/completions/kubectl.fish completions/
 ```
 
 ### Install using [Fisher](https://github.com/jorgebucaran/fisher)
 
-`fisher install evanlucas/fish-kubectl-completions`
+```
+fisher install evanlucas/fish-kubectl-completions
+```
 
 ## Building
 
 This was tested using go 1.15.7 on macOS 11.1 "Big Sur".
 
-```console
-$ make build
+```
+make build
 ```
 
 ## Environment Variables
